@@ -341,6 +341,7 @@
 </div>
 
 <section id="result">
+  <div id="thread-title" style="text-align:center;margin-bottom:1rem;font-size:0.9rem;font-weight:700;color:var(--soft);word-break:break-all;padding:0.5rem 1rem;background:var(--surface);border:1px solid var(--panel);border-radius:10px;display:none;"></div>
   <div class="score-card">
     <div class="score-label">保護したあにょざらし</div>
     <div class="score-num" id="total-score">0</div>
@@ -364,6 +365,10 @@
       <div class="stat-label">最大同時プール</div>
       <div class="stat-val" id="stat-maxpool">—</div>
     </div>
+    <div class="stat-item" style="grid-column: 1 / -1;">
+      <div class="stat-label">ᶘイ^⇁^ヅ川 の訪問回数</div>
+      <div class="stat-val delta-zero" id="stat-17">—</div>
+    </div>
   </div>
 
   <div class="log-section">
@@ -375,6 +380,12 @@
       <div id="log-rows"></div>
     </div>
   </div>
+  <div class="log-section" style="margin-top:1.5rem;">
+    <div class="log-header"><span>📈 プール・保護の推移</span></div>
+    <div style="padding:1rem;">
+      <canvas id="chart" style="width:100%;max-height:220px;"></canvas>
+    </div>
+  </div>
 </section>
 
 <section class="rules-section">
@@ -383,6 +394,263 @@
     <div class="rules-list">
       <div class="rule-row"><span class="rule-sec">全秒</span><span class="rule-desc">書き込み1件 → プールに+1匹</span></div>
       <div class="rule-row"><span class="rule-sec">:00</span><span class="rule-desc">🪤 プール全回収（保護）</span></div>
+      <div class="rule-row"><span class="rule-sec">:14</span><span class="rule-desc">|ｲ•᷄ - •᷅|𐙚|| があにょを連れてくる（保護+10匹）</span></div>
+      <div class="rule-row"><span class="rule-sec">:17</span><span class="rule-desc">ᶘｲ^⇁^ﾅ川 が遊びに来る（保護±0）</span></div>
+      <div class="rule-row"><span class="rule-sec">:20</span><span class="rule-desc">uism が chk に絆されてどこかへ（保護+10匹）</span></div>
+      <div class="rule-row"><span class="rule-sec">:27</span><span class="rule-desc">😨 uism に襲われる（保護−30匹）</span></div>
+      <div class="rule-row"><span class="rule-sec">:52</span><span class="rule-desc">😱 梢に襲われる（保護−10匹）</span></div>
+      <div class="rule-row"><span class="rule-sec">:57</span><span class="rule-desc">knknc が供給（保護+20匹）</span></div>
+    </div>
+  </details>
+</section>
+
+<script>
+  // ── ルール定義 ──
+  // ルール変更はここだけ編集すればOK！
+  // type: 'collect' → :00専用（プール全回収して保護へ）
+  // type: 'score'   → 保護数を直接増減（プールに影響なし）
+  const RULES = {
+    '00': { label: '🪤 罠回収！プールのあにょを保護', type: 'collect' },
+    '14': { label: '|ｲ•᷄ - •᷅|𐙚|| があにょを連れてくる', delta: 10,  type: 'score' },
+    '17': { label: 'ᶘｲ^⇁^ﾅ川 が遊びに来る',              delta: 0,   type: 'score' },
+    '20': { label: 'uism が chk に絆されてどこかへ',        delta: 10,  type: 'score' },
+    '27': { label: 'uism に襲われる！',                    delta: -30, type: 'score' },
+    '52': { label: '梢に襲われる！',                       delta: -10, type: 'score' },
+    '57': { label: 'knknc が供給される',                   delta: 20,  type: 'score' },
+  };
+
+  let logCollapsed = false;
+
+  function toggleLog(btn) {
+    const body = document.getElementById('log-body');
+    logCollapsed = !logCollapsed;
+    body.classList.toggle('collapsed', logCollapsed);
+    btn.textContent = logCollapsed ? '展開する' : '折りたたむ';
+  }
+
+  // したらばURLからrawmodeのURLを作る
+  // 入力: https://jbbs.shitaraba.net/bbs/read.cgi/CATEGORY/BBS/THREAD/
+  // 出力: https://jbbs.shitaraba.net/bbs/rawmode.cgi/CATEGORY/BBS/THREAD/1-
+  function toRawUrl(inputUrl) {
+    const u = inputUrl.trim().replace(/\/$/, '');
+    // read.cgi形式 → rawmode.cgi
+    const m = u.match(/jbbs\.shitaraba\.net\/bbs\/read\.cgi\/([^/]+\/[^/]+\/[^/]+)/);
+    if (m) {
+      return `https://jbbs.shitaraba.net/bbs/rawmode.cgi/${m[1]}/1-`;
+    }
+    // すでにrawmode.cgiならそのまま
+    if (u.includes('rawmode.cgi')) return u;
+    // 直接 /category/bbs/thread 形式
+    const m2 = u.match(/jbbs\.shitaraba\.net\/([^/]+\/\d+\/\d+)/);
+    if (m2) {
+      return `https://jbbs.shitaraba.net/bbs/rawmode.cgi/${m2[1]}/1-`;
+    }
+    return null;
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('error-box');
+    el.textContent = '⚠️ ' + msg;
+    el.style.display = 'block';
+  }
+
+  function hideError() {
+    document.getElementById('error-box').style.display = 'none';
+  }
+
+  // rawmodeのパース
+  // 各行: レス番号<>名前<>メール<>日時<>本文<>スレタイ<>
+  // 日時例: 2024/01/15 12:34:56
+  function parseRaw(text) {
+    const lines = text.split('\n').filter(l => l.trim());
+    return lines.map(line => {
+      const parts = line.split('<>');
+      if (parts.length < 6) return null;
+      const num  = parts[0].trim();
+      const date = parts[3].trim(); // "2024/01/15 12:34:56"
+      const secMatch = date.match(/:(\d{2})$/);
+      if (!secMatch) return null;
+      const title = parts[5] ? parts[5].trim() : '';
+      return { num, date, sec: secMatch[1], title };
+    }).filter(Boolean);
+  }
+
+  async function startCalc() {
+    const input = document.getElementById('url-input').value.trim();
+    if (!input) return;
+
+    hideError();
+    document.getElementById('result').style.display = 'none';
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('calc-btn').disabled = true;
+
+    try {
+      const rawUrl = toRawUrl(input);
+      if (!rawUrl) {
+        throw new Error('URLの形式が正しくありません。したらば掲示板のスレURLを入力してください。');
+      }
+
+      // プロキシ経由で取得
+      const proxyUrl = `/api/fetch?url=${encodeURIComponent(rawUrl)}`;
+      const res = await fetch(proxyUrl);
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
+        throw new Error(err.error || `取得失敗 (${res.status})`);
+      }
+      const text = await res.text();
+
+      const posts = parseRaw(text);
+      if (posts.length === 0) {
+        throw new Error('書き込みが見つかりませんでした。URLを確認してください。');
+      }
+
+      // スレタイ（最初のレスのparts[5]）
+      const titleEl = document.getElementById('thread-title');
+      const titleText = posts[0]?.title || '';
+      if (titleText) {
+        titleEl.textContent = '📌 ' + titleText;
+        titleEl.style.display = 'block';
+      } else {
+        titleEl.style.display = 'none';
+      }
+
+      renderResult(posts);
+
+    } catch (err) {
+      showError(err.message);
+    } finally {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('calc-btn').disabled = false;
+    }
+  }
+
+  function renderResult(posts) {
+    let pool = 0;      // 現在プールにいる匹数
+    let score = 0;     // 保護した合計
+    let maxPool = 0;
+    let collectCount = 0;
+    let visit17 = 0;   // ᶘｲ^⇁^ﾅ川の訪問回数
+    const events = [];
+    const history = []; // {num, pool, score} の推移
+
+    for (const post of posts) {
+      // まず書き込みで+1
+      pool += 1;
+
+      const rule = RULES[post.sec];
+
+      if (rule) {
+        if (rule.type === 'collect') {
+          // :00 → プール全回収して保護へ（+1してから）
+          if (pool > 0) {
+            score += pool;
+            collectCount++;
+            events.push({ num: post.num, date: post.date, label: rule.label, delta: pool, type: 'collect' });
+            pool = 0;
+          } else {
+            events.push({ num: post.num, date: post.date, label: rule.label, delta: 0, type: 'collect-empty' });
+          }
+        } else if (rule.type === 'score') {
+          // 保護数を直接増減（プールには影響しない）
+          if (post.sec === '17') visit17++;
+          score += rule.delta;
+          if (score < 0) score = 0;
+          const evType = rule.delta > 0 ? 'plus' : rule.delta < 0 ? 'minus' : 'zero';
+          events.push({ num: post.num, date: post.date, label: rule.label, delta: rule.delta, type: evType });
+        }
+      }
+
+      if (pool > maxPool) maxPool = pool;
+      history.push({ num: parseInt(post.num), pool, score }); // 全書き込みで記録
+    }
+
+    // 表示
+    document.getElementById('total-score').textContent = score.toLocaleString();
+    document.getElementById('stat-posts').textContent = posts.length.toLocaleString() + ' 件';
+    document.getElementById('stat-pool').textContent = pool.toLocaleString() + ' 匹';
+    document.getElementById('stat-00').textContent = collectCount + ' 回';
+    document.getElementById('stat-maxpool').textContent = maxPool.toLocaleString() + ' 匹';
+    document.getElementById('stat-17').textContent = visit17.toLocaleString() + ' 回';
+
+    // イベントログ
+    const logRows = document.getElementById('log-rows');
+    logRows.innerHTML = '';
+    if (events.length === 0) {
+      logRows.innerHTML = '<div class="log-row"><span class="log-event" style="color:var(--muted);grid-column:1/-1">特殊秒の書き込みはありませんでした</span></div>';
+    } else {
+      for (const ev of events) {
+        const row = document.createElement('div');
+        row.className = 'log-row';
+
+        let deltaClass = '';
+        let deltaStr = '';
+        if (ev.type === 'collect') {
+          deltaClass = 'delta-get';
+          deltaStr = `+${ev.delta}匹 保護！`;
+        } else if (ev.type === 'collect-empty') {
+          deltaClass = 'delta-zero';
+          deltaStr = '(空)';
+        } else if (ev.type === 'plus') {
+          deltaClass = 'delta-plus';
+          deltaStr = `+${ev.delta}`;
+        } else if (ev.type === 'minus') {
+          deltaClass = 'delta-minus';
+          deltaStr = `${ev.delta}`;
+        } else {
+          deltaClass = 'delta-zero';
+          deltaStr = '±0';
+        }
+
+        row.innerHTML = `
+          <span class="log-res">&gt;&gt;${ev.num}</span>
+          <span class="log-event">${ev.label}<br><span style="font-size:0.68rem;color:var(--muted)">${ev.date}</span></span>
+          <span class="log-delta ${deltaClass}">${deltaStr}</span>
+        `;
+        logRows.appendChild(row);
+      }
+    }
+
+    document.getElementById('result').style.display = 'block';
+
+    // グラフ描画
+    drawChart(history);
+
+    // スクロール
+    document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+
+  function drawChart(history) {
+    const canvas = document.getElementById('chart');
+    const ctx = canvas.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    const W = canvas.parentElement.clientWidth - 32;
+    const H = 200;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.scale(dpr, dpr);
+
+    if (history.length < 2) return;
+
+    const poolVals  = history.map(h => h.pool);
+    const scoreVals = history.map(h => h.score);
+    const allVals   = [...poolVals, ...scoreVals];
+    const maxVal    = Math.max(...allVals, 1);
+    const minVal    = Math.min(...allVals, 0);
+    const range     = maxVal - minVal || 1;
+
+    const pad = { top: 12, right: 16, bottom: 28, left: 40 };
+    const gW = W - pad.left - pad.right;
+    const gH = H - pad.top - pad.bottom;
+
+    // 背景
+    ctx.fillStyle = '#0f3460';
+    ctx.roundRect(0, 0, W, H, 8);
+    ctx.fill();
+
+   <div class="rule-row"><span class="rule-sec">:00</span><span class="rule-desc">🪤 プール全回収（保護）</span></div>
       <div class="rule-row"><span class="rule-sec">:14</span><span class="rule-desc">|ｲ•᷄ - •᷅|𐙚|| がプール+10匹連れてくる</span></div>
       <div class="rule-row"><span class="rule-sec">:17</span><span class="rule-desc">ᶘｲ^⇁^ﾅ川 が遊びに来る（プラマイ0）</span></div>
       <div class="rule-row"><span class="rule-sec">:20</span><span class="rule-desc">uism が chk に絆されてどこかへ… プール+10匹</span></div>
