@@ -7,75 +7,64 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg:#1a1a2e; --surface:#16213e; --panel:#0f3460;
-      --accent:#e94560; --gold:#f5c842; --mint:#5ef0c8;
-      --soft:#c9d6ff; --text:#eef0ff; --muted:#7b82a8;
-      --plus:#5ef0c8; --minus:#ff6b6b; --zero:#f5c842;
+      --bg:#1a1a2e;--surface:#16213e;--panel:#0f3460;
+      --accent:#e94560;--gold:#f5c842;--mint:#5ef0c8;
+      --soft:#c9d6ff;--text:#eef0ff;--muted:#7b82a8;
+      --plus:#5ef0c8;--minus:#ff6b6b;--zero:#f5c842;
     }
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:1.5rem 1rem 4rem;}
-
-    header{text-align:center;margin-bottom:2rem;}
-    .trap-icon{font-size:3.5rem;display:block;animation:bounce 2s ease-in-out infinite;}
-    @keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
-    h1{font-size:clamp(1.4rem,5vw,2rem);font-weight:900;margin-top:.4rem;background:linear-gradient(135deg,var(--soft),var(--mint));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-    .subtitle{font-size:.8rem;color:var(--muted);margin-top:.3rem;}
-
-    .input-section{max-width:640px;margin:0 auto 2rem;}
-    .input-row{display:flex;gap:.5rem;}
-    input[type="text"]{flex:1;background:var(--surface);border:1.5px solid var(--panel);border-radius:10px;color:var(--text);font-family:inherit;font-size:.9rem;padding:.75rem 1rem;outline:none;transition:border-color .2s;}
-    input[type="text"]:focus{border-color:var(--mint);}
-    input[type="text"]::placeholder{color:var(--muted);}
-    #calc-btn{background:linear-gradient(135deg,var(--accent),#c0392b);color:#fff;border:none;border-radius:10px;font-family:inherit;font-size:.9rem;font-weight:700;padding:.75rem 1.4rem;cursor:pointer;white-space:nowrap;}
-    #calc-btn:disabled{opacity:.4;cursor:not-allowed;}
-    .hint{font-size:.75rem;color:var(--muted);margin-top:.5rem;text-align:center;}
-
-    #loading{display:none;text-align:center;padding:2rem;color:var(--muted);font-size:.9rem;}
-    .spinner{width:32px;height:32px;border:3px solid var(--panel);border-top-color:var(--mint);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto .8rem;}
-    @keyframes spin{to{transform:rotate(360deg);}}
-
-    #error-box{display:none;max-width:640px;margin:0 auto 1.5rem;background:rgba(233,69,96,.15);border:1px solid var(--accent);border-radius:10px;padding:.8rem 1rem;font-size:.85rem;color:#ffaaaa;word-break:break-all;}
-
-    #result{max-width:640px;margin:0 auto;display:none;}
-
-    #thread-title{display:none;text-align:center;margin-bottom:1rem;font-size:.9rem;font-weight:700;color:var(--soft);word-break:break-all;padding:.5rem 1rem;background:var(--surface);border:1px solid var(--panel);border-radius:10px;}
-
-    .score-card{background:var(--surface);border:1.5px solid var(--panel);border-radius:16px;padding:1.5rem;margin-bottom:1.5rem;text-align:center;}
-    .score-label{font-size:.75rem;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin-bottom:.5rem;}
-    .score-num{font-size:clamp(3rem,12vw,5rem);font-weight:900;line-height:1;color:var(--mint);}
-    .score-unit{font-size:1rem;color:var(--muted);margin-top:.4rem;}
-
-    .stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem;margin-bottom:1.5rem;}
-    .stat-item{background:var(--surface);border:1px solid var(--panel);border-radius:12px;padding:.9rem 1rem;}
-    .stat-item.full{grid-column:1/-1;}
-    .stat-label{font-size:.7rem;color:var(--muted);margin-bottom:.3rem;line-height:1.4;}
-    .stat-val{font-size:1.3rem;font-weight:700;}
-    .stat-val.sm{font-size:1rem;}
-
-    .section-box{background:var(--surface);border:1px solid var(--panel);border-radius:12px;overflow:hidden;margin-bottom:1.5rem;}
-    .section-head{background:var(--panel);padding:.65rem 1rem;font-size:.8rem;font-weight:700;color:var(--soft);display:flex;justify-content:space-between;align-items:center;}
-    .toggle-btn{background:none;border:1px solid rgba(255,255,255,.2);color:var(--muted);font-size:.75rem;cursor:pointer;padding:.1rem .5rem;border-radius:4px;font-family:inherit;}
-    .collapsible{max-height:400px;overflow-y:auto;}
-    .collapsible.collapsed{display:none;}
-
-    .log-row{display:grid;grid-template-columns:3.5rem 1fr auto;gap:.5rem;align-items:center;padding:.5rem 1rem;border-bottom:1px solid rgba(255,255,255,.04);font-size:.82rem;}
-    .log-row:last-child{border-bottom:none;}
-    .log-res{color:var(--muted);font-size:.72rem;}
-    .log-event{color:var(--text);line-height:1.35;}
-    .log-delta{font-weight:700;white-space:nowrap;font-size:.8rem;}
-    .dp{color:var(--plus);} .dm{color:var(--minus);} .dz{color:var(--zero);} .dg{color:var(--gold);}
-
-    .chart-inner{padding:1rem;}
-    canvas{display:block;width:100%;}
-
-    .rules-section{max-width:640px;margin:0 auto;}
-    details{background:var(--surface);border:1px solid var(--panel);border-radius:12px;overflow:hidden;}
-    summary{padding:.7rem 1rem;font-size:.8rem;font-weight:700;color:var(--muted);cursor:pointer;list-style:none;}
-    summary::-webkit-details-marker{display:none;}
-    .rule-row{display:flex;gap:.75rem;padding:.35rem 1rem;border-bottom:1px solid rgba(255,255,255,.04);font-size:.8rem;}
-    .rule-row:last-child{border-bottom:none;}
-    .rule-sec{min-width:2.5rem;font-weight:700;color:var(--gold);}
-    .rule-desc{color:var(--muted);line-height:1.45;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:1.5rem 1rem 4rem}
+    header{text-align:center;margin-bottom:2rem}
+    .trap-icon{font-size:3.5rem;display:block;animation:bounce 2s ease-in-out infinite}
+    @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+    h1{font-size:clamp(1.4rem,5vw,2rem);font-weight:900;margin-top:.4rem;background:linear-gradient(135deg,var(--soft),var(--mint));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .subtitle{font-size:.8rem;color:var(--muted);margin-top:.3rem}
+    .input-section{max-width:640px;margin:0 auto 2rem}
+    .input-row{display:flex;gap:.5rem}
+    input[type=text]{flex:1;background:var(--surface);border:1.5px solid var(--panel);border-radius:10px;color:var(--text);font-family:inherit;font-size:.9rem;padding:.75rem 1rem;outline:none;transition:border-color .2s}
+    input[type=text]:focus{border-color:var(--mint)}
+    input[type=text]::placeholder{color:var(--muted)}
+    #calc-btn{background:linear-gradient(135deg,var(--accent),#c0392b);color:#fff;border:none;border-radius:10px;font-family:inherit;font-size:.9rem;font-weight:700;padding:.75rem 1.4rem;cursor:pointer;white-space:nowrap}
+    #calc-btn:disabled{opacity:.4;cursor:not-allowed}
+    .hint{font-size:.75rem;color:var(--muted);margin-top:.5rem;text-align:center}
+    #loading{display:none;text-align:center;padding:2rem;color:var(--muted);font-size:.9rem}
+    .spinner{width:32px;height:32px;border:3px solid var(--panel);border-top-color:var(--mint);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto .8rem}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    #error-box{display:none;max-width:640px;margin:0 auto 1.5rem;background:rgba(233,69,96,.15);border:1px solid var(--accent);border-radius:10px;padding:.8rem 1rem;font-size:.85rem;color:#ffaaaa;word-break:break-all}
+    #result{display:none;max-width:640px;margin:0 auto}
+    #thread-title{display:none;text-align:center;margin-bottom:1rem;font-size:.9rem;font-weight:700;color:var(--soft);word-break:break-all;padding:.5rem 1rem;background:var(--surface);border:1px solid var(--panel);border-radius:10px}
+    .score-card{background:var(--surface);border:1.5px solid var(--panel);border-radius:16px;padding:1.5rem 1.5rem 1.2rem;margin-bottom:1.5rem;text-align:center}
+    .score-label{font-size:.75rem;letter-spacing:.12em;color:var(--muted);margin-bottom:.5rem}
+    .score-num{font-size:clamp(3rem,12vw,5rem);font-weight:900;line-height:1;color:var(--mint)}
+    .score-unit{font-size:1rem;color:var(--muted);margin-top:.4rem}
+    .stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem;margin-bottom:1.5rem}
+    .stat-item{background:var(--surface);border:1px solid var(--panel);border-radius:12px;padding:.9rem 1rem}
+    .stat-item.full{grid-column:1/-1}
+    .stat-label{font-size:.7rem;color:var(--muted);margin-bottom:.3rem}
+    .stat-val{font-size:1.3rem;font-weight:700}
+    .log-section{background:var(--surface);border:1px solid var(--panel);border-radius:12px;overflow:hidden;margin-bottom:1.5rem}
+    .log-header{background:var(--panel);padding:.65rem 1rem;font-size:.8rem;font-weight:700;color:var(--soft);display:flex;justify-content:space-between;align-items:center}
+    .log-toggle{background:none;border:1px solid rgba(255,255,255,.2);color:var(--muted);font-size:.75rem;cursor:pointer;padding:.1rem .5rem;border-radius:4px;font-family:inherit}
+    #log-body{max-height:360px;overflow-y:auto}
+    #log-body.collapsed{display:none}
+    .log-row{display:grid;grid-template-columns:3.5rem 1fr auto;gap:.5rem;align-items:center;padding:.5rem 1rem;border-bottom:1px solid rgba(255,255,255,.04);font-size:.82rem}
+    .log-row:last-child{border-bottom:none}
+    .log-res{color:var(--muted);font-size:.72rem}
+    .log-event{color:var(--text);line-height:1.35}
+    .log-delta{font-weight:700;white-space:nowrap;font-size:.8rem}
+    .delta-plus{color:var(--plus)}.delta-minus{color:var(--minus)}.delta-zero{color:var(--zero)}.delta-get{color:var(--gold)}
+    .chart-wrap{background:var(--surface);border:1px solid var(--panel);border-radius:12px;padding:1rem;margin-bottom:1.5rem}
+    .chart-title{font-size:.8rem;font-weight:700;color:var(--soft);margin-bottom:.75rem}
+    canvas{display:block;width:100%}
+    .rules-section{max-width:640px;margin:1.5rem auto 0}
+    details{background:var(--surface);border:1px solid var(--panel);border-radius:12px;overflow:hidden}
+    summary{padding:.7rem 1rem;font-size:.8rem;font-weight:700;color:var(--muted);cursor:pointer;list-style:none}
+    summary::-webkit-details-marker{display:none}
+    .rules-list{padding:0 1rem 1rem}
+    .rule-row{display:flex;gap:.75rem;padding:.35rem 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.8rem}
+    .rule-row:last-child{border-bottom:none}
+    .rule-sec{min-width:2.5rem;font-weight:700;color:var(--gold)}
+    .rule-desc{color:var(--muted);line-height:1.45}
   </style>
 </head>
 <body>
@@ -97,70 +86,68 @@
 <div id="error-box"></div>
 <div id="loading"><div class="spinner"></div>書き込みを読み込み中…</div>
 
-<div id="result">
+<section id="result">
   <div id="thread-title"></div>
-
   <div class="score-card">
     <div class="score-label">保護したあにょざらし</div>
     <div class="score-num" id="total-score">0</div>
     <div class="score-unit">匹</div>
   </div>
-
   <div class="stats-grid">
     <div class="stat-item"><div class="stat-label">総書き込み数</div><div class="stat-val" id="stat-posts">—</div></div>
     <div class="stat-item"><div class="stat-label">プールに残っている</div><div class="stat-val" id="stat-pool">—</div></div>
-    <div class="stat-item"><div class="stat-label">00秒 回収イベント</div><div class="stat-val dg" id="stat-00">—</div></div>
+    <div class="stat-item"><div class="stat-label">00秒 回収イベント</div><div class="stat-val delta-get" id="stat-00">—</div></div>
     <div class="stat-item"><div class="stat-label">最大同時プール</div><div class="stat-val" id="stat-maxpool">—</div></div>
-    <div class="stat-item full"><div class="stat-label">ᶘｲ^⇁^ﾅ川 の訪問回数</div><div class="stat-val dz" id="stat-17">—</div></div>
-    <div class="stat-item"><div class="stat-label">|ｲ•᷄ - •᷅|𐙚|| が連れてきたʃ§の数</div><div class="stat-val dp sm" id="stat-c14">—</div></div>
-    <div class="stat-item"><div class="stat-label">uism が chk に絆された回数</div><div class="stat-val dp sm" id="stat-c20">—</div></div>
-    <div class="stat-item"><div class="stat-label">uism に連れて行かれたʃ§の数</div><div class="stat-val dm sm" id="stat-c27">—</div></div>
-    <div class="stat-item"><div class="stat-label">梢に連れて行かれたʃ§の数</div><div class="stat-val dm sm" id="stat-c52">—</div></div>
-    <div class="stat-item full"><div class="stat-label">knknc がイチャイチャした回数（供給数）</div><div class="stat-val dp sm" id="stat-c57">—</div></div>
+    <div class="stat-item full"><div class="stat-label">ᶘｲ^⇁^ﾅ川 の訪問回数</div><div class="stat-val delta-zero" id="stat-17">—</div></div>
+    <div class="stat-item full"><div class="stat-label">|ｲ•᷄ - •᷅|𐙚|| が連れてきたʃ§ ( っ⁼´꒳`)っの数</div><div class="stat-val delta-plus" id="stat-14">—</div></div>
+    <div class="stat-item full"><div class="stat-label">uism が chk に絆された回数</div><div class="stat-val delta-plus" id="stat-20">—</div></div>
+    <div class="stat-item full"><div class="stat-label">uism に連れて行かれたʃ§ ( っ⁼´꒳`)っの数</div><div class="stat-val delta-minus" id="stat-27">—</div></div>
+    <div class="stat-item full"><div class="stat-label">梢に連れて行かれたʃ§ ( っ⁼´꒳`)っの数</div><div class="stat-val delta-minus" id="stat-52">—</div></div>
+    <div class="stat-item full"><div class="stat-label">knknc がイチャイチャした回数</div><div class="stat-val delta-plus" id="stat-57">—</div></div>
   </div>
-
-  <div class="section-box">
-    <div class="section-head">
+  <div class="log-section">
+    <div class="log-header">
       <span>📝 イベントログ（特殊秒のみ）</span>
-      <button class="toggle-btn" id="log-toggle-btn">折りたたむ</button>
+      <button class="log-toggle" id="log-toggle-btn">折りたたむ</button>
     </div>
-    <div class="collapsible" id="log-body">
-      <div id="log-rows"></div>
-    </div>
+    <div id="log-body"><div id="log-rows"></div></div>
   </div>
-
-  <div class="section-box">
-    <div class="section-head"><span>📈 プール・保護の推移</span></div>
-    <div class="chart-inner"><canvas id="chart"></canvas></div>
+  <div class="chart-wrap">
+    <div class="chart-title">📈 プール・保護の推移</div>
+    <canvas id="chart"></canvas>
   </div>
-</div>
+</section>
 
-<div style="max-width:640px;margin:0 auto;">
-  <details class="rules-section">
+<section class="rules-section">
+  <details>
     <summary>ルール一覧</summary>
-    <div class="rule-row"><span class="rule-sec">全秒</span><span class="rule-desc">書き込み1件 → プールに+1匹</span></div>
-    <div class="rule-row"><span class="rule-sec">:00</span><span class="rule-desc">🪤 プール全回収（保護へ）</span></div>
-    <div class="rule-row"><span class="rule-sec">:14</span><span class="rule-desc">|ｲ•᷄ - •᷅|𐙚|| があにょを連れてくる（保護+10匹）</span></div>
-    <div class="rule-row"><span class="rule-sec">:17</span><span class="rule-desc">ᶘｲ^⇁^ﾅ川 が遊びに来る（保護±0）</span></div>
-    <div class="rule-row"><span class="rule-sec">:20</span><span class="rule-desc">uism が chk に絆されてどこかへ（保護+10匹）</span></div>
-    <div class="rule-row"><span class="rule-sec">:27</span><span class="rule-desc">😨 uism に襲われる（保護−30匹）</span></div>
-    <div class="rule-row"><span class="rule-sec">:52</span><span class="rule-desc">😱 梢に襲われる（保護−10匹）</span></div>
-    <div class="rule-row"><span class="rule-sec">:57</span><span class="rule-desc">knknc が供給（保護+20匹）</span></div>
+    <div class="rules-list">
+      <div class="rule-row"><span class="rule-sec">初期値</span><span class="rule-desc">保護あにょ 100匹からスタート</span></div>
+      <div class="rule-row"><span class="rule-sec">全秒</span><span class="rule-desc">書き込み1件 → プールに+1匹</span></div>
+      <div class="rule-row"><span class="rule-sec">:00</span><span class="rule-desc">🪤 プール全回収（保護へ）</span></div>
+      <div class="rule-row"><span class="rule-sec">:14</span><span class="rule-desc">|ｲ•᷄ - •᷅|𐙚|| があにょを連れてくる（保護+10匹）</span></div>
+      <div class="rule-row"><span class="rule-sec">:17</span><span class="rule-desc">ᶘｲ^⇁^ﾅ川 が遊びに来る（保護±0）</span></div>
+      <div class="rule-row"><span class="rule-sec">:20</span><span class="rule-desc">uism が chk に絆されてどこかへ（保護+10匹）</span></div>
+      <div class="rule-row"><span class="rule-sec">:27</span><span class="rule-desc">😨 uism に襲われる（保護−30匹）</span></div>
+      <div class="rule-row"><span class="rule-sec">:52</span><span class="rule-desc">😱 梢に襲われる（保護−10匹）</span></div>
+      <div class="rule-row"><span class="rule-sec">:57</span><span class="rule-desc">knknc が供給（保護+20匹）</span></div>
+    </div>
   </details>
-</div>
+</section>
 
 <script>
 var RULES = {
   '00': { label: '🪤 罠回収！プールのあにょを保護', type: 'collect' },
-  '14': { label: '|ｲ•᷄ - •᷅|𐙚|| があにょを連れてくる', delta: 10,  type: 'score' },
-  '17': { label: 'ᶘｲ^⇁^ﾅ川 が遊びに来る',              delta: 0,   type: 'score' },
-  '20': { label: 'uism が chk に絆されてどこかへ',        delta: 10,  type: 'score' },
-  '27': { label: 'uism に襲われる！',                    delta: -30, type: 'score' },
-  '52': { label: '梢に襲われる！',                       delta: -10, type: 'score' },
-  '57': { label: 'knknc が供給される',                   delta: 20,  type: 'score' }
+  '14': { label: '|ｲ\u2022\u1e24 - \u2022\u1e25|\ud800\udd9a|| があにょを連れてくる', delta: 10,  type: 'score' },
+  '17': { label: '\u1d98\u30a4^\u21c1^\uff6c\u5ddd が遊びに来る',                   delta: 0,   type: 'score' },
+  '20': { label: 'uism が chk に絆されてどこかへ',                                  delta: 10,  type: 'score' },
+  '27': { label: 'uism に襲われる！',                                               delta: -30, type: 'score' },
+  '52': { label: '梢に襲われる！',                                                  delta: -10, type: 'score' },
+  '57': { label: 'knknc が供給される',                                              delta: 20,  type: 'score' }
 };
 
 var logCollapsed = false;
+
 document.getElementById('log-toggle-btn').addEventListener('click', function() {
   logCollapsed = !logCollapsed;
   document.getElementById('log-body').classList.toggle('collapsed', logCollapsed);
@@ -176,7 +163,9 @@ function showError(msg) {
   el.textContent = '⚠️ ' + msg;
   el.style.display = 'block';
 }
-function hideError() { document.getElementById('error-box').style.display = 'none'; }
+function hideError() {
+  document.getElementById('error-box').style.display = 'none';
+}
 
 function toRawUrl(input) {
   var u = input.trim().replace(/\/$/, '');
@@ -186,6 +175,12 @@ function toRawUrl(input) {
   var m2 = u.match(/jbbs\.shitaraba\.net\/([^\/]+\/\d+\/\d+)/);
   if (m2) return 'https://jbbs.shitaraba.net/bbs/rawmode.cgi/' + m2[1] + '/1-';
   return null;
+}
+
+function decodeHtmlEntities(str) {
+  var txt = document.createElement('textarea');
+  txt.innerHTML = str;
+  return txt.value;
 }
 
 function parseRaw(text) {
@@ -229,8 +224,9 @@ function startCalc() {
       var posts = parseRaw(text);
       if (posts.length === 0) throw new Error('書き込みが見つかりませんでした。URLを確認してください。');
       var titleEl = document.getElementById('thread-title');
-      var tt = posts[0].title || '';
-      if (tt) { titleEl.textContent = '📌 ' + tt; titleEl.style.display = 'block'; }
+      var rawTitle = posts[0].title || '';
+      var titleText = rawTitle ? decodeHtmlEntities(rawTitle) : '';
+      if (titleText) { titleEl.textContent = '📌 ' + titleText; titleEl.style.display = 'block'; }
       else { titleEl.style.display = 'none'; }
       renderResult(posts);
     })
@@ -242,10 +238,10 @@ function startCalc() {
 }
 
 function renderResult(posts) {
-  var pool = 0, score = 0, maxPool = 0, collectCount = 0;
-  var cnt = { '14': 0, '17': 0, '20': 0, '27': 0, '52': 0, '57': 0 };
-  var dmg = { '14': 0, '27': 0, '52': 0, '57': 0 };
-  var events = [], chartData = [];
+  var pool = 0, score = 100, maxPool = 0, collectCount = 0;
+  var visit17 = 0, count14 = 0, count20 = 0, count27 = 0, count52 = 0, count57 = 0;
+  var events = [];
+  var chartData = [];
 
   for (var i = 0; i < posts.length; i++) {
     var post = posts[i];
@@ -261,238 +257,18 @@ function renderResult(posts) {
           events.push({ num: post.num, date: post.date, label: rule.label, delta: 0, type: 'collect-empty' });
         }
       } else if (rule.type === 'score') {
-        if (cnt[post.sec] !== undefined) cnt[post.sec]++;
-        // 累積ダメージ/供給数を記録
-        if (post.sec === '14') dmg['14'] += 10;
-        if (post.sec === '27') dmg['27'] += 30;
-        if (post.sec === '52') dmg['52'] += 10;
-        if (post.sec === '57') dmg['57'] += 20;
-        score += rule.delta;
-        if (score < 0) score = 0;
-        var et = rule.delta > 0 ? 'plus' : rule.delta < 0 ? 'minus' : 'zero';
-        events.push({ num: post.num, date: post.date, label: rule.label, delta: rule.delta, type: et });
-      }
-    }
-    if (pool > maxPool) maxPool = pool;
-    chartData.push({ pool: pool, score: score });
-  }
-
-  document.getElementById('total-score').textContent = score.toLocaleString();
-  document.getElementById('stat-posts').textContent = posts.length.toLocaleString() + ' 件';
-  document.getElementById('stat-pool').textContent = pool.toLocaleString() + ' 匹';
-  document.getElementById('stat-00').textContent = collectCount + ' 回';
-  document.getElementById('stat-maxpool').textContent = maxPool.toLocaleString() + ' 匹';
-  document.getElementById('stat-17').textContent = cnt['17'] + ' 回';
-  document.getElementById('stat-c14').textContent = dmg['14'] + ' 匹（' + cnt['14'] + '回）';
-  document.getElementById('stat-c20').textContent = cnt['20'] + ' 回（保護+' + cnt['20']*10 + '匹）';
-  document.getElementById('stat-c27').textContent = dmg['27'] + ' 匹（' + cnt['27'] + '回）';
-  document.getElementById('stat-c52').textContent = dmg['52'] + ' 匹（' + cnt['52'] + '回）';
-  document.getElementById('stat-c57').textContent = cnt['57'] + ' 回（保護+' + dmg['57'] + '匹）';
-
-  var logRows = document.getElementById('log-rows');
-  logRows.innerHTML = '';
-  if (events.length === 0) {
-    logRows.innerHTML = '<div class="log-row"><span class="log-event" style="color:var(--muted);grid-column:1/-1">特殊秒の書き込みはありませんでした</span></div>';
-  } else {
-    for (var j = 0; j < events.length; j++) {
-      var ev = events[j];
-      var dc, ds;
-      if (ev.type === 'collect')       { dc = 'dg'; ds = '+' + ev.delta + '匹 保護！'; }
-      else if (ev.type === 'collect-empty') { dc = 'dz'; ds = '(空)'; }
-      else if (ev.type === 'plus')     { dc = 'dp'; ds = '+' + ev.delta; }
-      else if (ev.type === 'minus')    { dc = 'dm'; ds = '' + ev.delta; }
-      else                             { dc = 'dz'; ds = '±0'; }
-      var row = document.createElement('div');
-      row.className = 'log-row';
-      row.innerHTML = '<span class="log-res">&gt;&gt;' + ev.num + '</span>'
-        + '<span class="log-event">' + ev.label + '<br><span style="font-size:.68rem;color:var(--muted)">' + ev.date + '</span></span>'
-        + '<span class="log-delta ' + dc + '">' + ds + '</span>';
-      logRows.appendChild(row);
-    }
-  }
-
-  document.getElementById('result').style.display = 'block';
-  // キャンバスリセット（再集計時の重複描画防止）
-  var cv = document.getElementById('chart'); cv.width = cv.width;
-  drawChart(chartData);
-  document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-function drawChart(data) {
-  var canvas = document.getElementById('chart');
-  var ctx2 = canvas.getContext('2d'); ctx2.clearRect(0, 0, canvas.width, canvas.height);
-  var ctx = canvas.getContext('2d');
-  var dpr = window.devicePixelRatio || 1;
-  var W = canvas.parentElement.clientWidth - 2;
-  var H = 200;
-  canvas.width = W * dpr; canvas.height = H * dpr;
-  canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
-  ctx.scale(dpr, dpr);
-  if (data.length < 2) return;
-
-  var poolVals  = data.map(function(d) { return d.pool; });
-  var scoreVals = data.map(function(d) { return d.score; });
-  var all = poolVals.concat(scoreVals);
-  var maxV = Math.max.apply(null, all.concat([1]));
-  var minV = Math.min.apply(null, all.concat([0]));
-  var range = maxV - minV || 1;
-  var pad = { t:16, r:16, b:28, l:44 };
-  var gW = W - pad.l - pad.r, gH = H - pad.t - pad.b;
-
-  ctx.fillStyle = '#0f3460'; ctx.fillRect(0, 0, W, H);
-
-  ctx.strokeStyle = 'rgba(255,255,255,0.08)'; ctx.lineWidth = 1;
-  for (var i = 0; i <= 4; i++) {
-    var y = pad.t + (gH/4)*i;
-    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(pad.l+gW, y); ctx.stroke();
-    ctx.fillStyle = '#7b82a8'; ctx.font = '10px sans-serif'; ctx.textAlign = 'right';
-    ctx.fillText(Math.round(maxV - (range/4)*i), pad.l-4, y+4);
-  }
-
-  function toX(i) { return pad.l + (i/(data.length-1))*gW; }
-  function toY(v) { return pad.t + gH - ((v-minV)/range)*gH; }
-  function drawLine(vals, color) {
-    ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.lineJoin = 'round';
-    for (var k = 0; k < vals.length; k++) {
-      if (k===0) ctx.moveTo(toX(k), toY(vals[k]));
-      else ctx.lineTo(toX(k), toY(vals[k]));
-    }
-    ctx.stroke();
-  }
-  drawLine(poolVals, '#c9d6ff');
-  drawLine(scoreVals, '#5ef0c8');
-
-  ctx.fillStyle = '#7b82a8'; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
-  var li = [0, Math.floor(data.length/2), data.length-1];
-  for (var n = 0; n < li.length; n++) ctx.fillText('>>'+(li[n]+1), toX(li[n]), H-8);
-
-  ctx.font = '11px sans-serif'; ctx.textAlign = 'left';
-  ctx.fillStyle = '#c9d6ff'; ctx.fillRect(pad.l, 4, 12, 8);
-  ctx.fillStyle = '#eef0ff'; ctx.fillText('プール', pad.l+16, 12);
-  ctx.fillStyle = '#5ef0c8'; ctx.fillRect(pad.l+72, 4, 12, 8);
-  ctx.fillStyle = '#eef0ff'; ctx.fillText('保護', pad.l+88, 12);
-}
-</script>
-</body>
-</html>
-' : '折りたたむ';
-});
-
-document.getElementById('calc-btn').addEventListener('click', startCalc);
-document.getElementById('url-input').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') startCalc();
-});
-
-function showError(msg) {
-  var el = document.getElementById('error-box');
-  el.textContent = '⚠️ ' + msg;
-  el.style.display = 'block';
-}
-function hideError() {
-  document.getElementById('error-box').style.display = 'none';
-}
-
-function toRawUrl(input) {
-  var u = input.trim().replace(/\/$/, '');
-  var m = u.match(/jbbs\.shitaraba\.net\/bbs\/read\.cgi\/([^\/]+\/[^\/]+\/[^\/]+)/);
-  if (m) return 'https://jbbs.shitaraba.net/bbs/rawmode.cgi/' + m[1] + '/1-';
-  if (u.indexOf('rawmode.cgi') !== -1) return u;
-  var m2 = u.match(/jbbs\.shitaraba\.net\/([^\/]+\/\d+\/\d+)/);
-  if (m2) return 'https://jbbs.shitaraba.net/bbs/rawmode.cgi/' + m2[1] + '/1-';
-  return null;
-}
-
-function parseRaw(text) {
-  var lines = text.split('\n');
-  var posts = [];
-  for (var i = 0; i < lines.length; i++) {
-    var line = lines[i].trim();
-    if (!line) continue;
-    var parts = line.split('<>');
-    if (parts.length < 6) continue;
-    var date = parts[3].trim();
-    var sm = date.match(/:(\d{2})$/);
-    if (!sm) continue;
-    posts.push({ num: parts[0].trim(), date: date, sec: sm[1], title: parts[5].trim() });
-  }
-  return posts;
-}
-
-function startCalc() {
-  var input = document.getElementById('url-input').value.trim();
-  if (!input) { showError('URLを入力してください'); return; }
-
-  hideError();
-  document.getElementById('result').style.display = 'none';
-  document.getElementById('loading').style.display = 'block';
-  document.getElementById('calc-btn').disabled = true;
-
-  var rawUrl = toRawUrl(input);
-  if (!rawUrl) {
-    showError('URLの形式が正しくありません。したらば掲示板のスレURLを入力してください。');
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('calc-btn').disabled = false;
-    return;
-  }
-
-  var proxyUrl = '/api/fetch?url=' + encodeURIComponent(rawUrl);
-
-  fetch(proxyUrl)
-    .then(function(res) {
-      if (!res.ok) {
-        return res.text().then(function(t) { throw new Error('取得失敗 HTTP ' + res.status + ': ' + t); });
-      }
-      return res.text();
-    })
-    .then(function(text) {
-      var posts = parseRaw(text);
-      if (posts.length === 0) throw new Error('書き込みが見つかりませんでした。URLを確認してください。');
-
-      var titleEl = document.getElementById('thread-title');
-      var titleText = posts[0].title || '';
-      if (titleText) { titleEl.textContent = '📌 ' + titleText; titleEl.style.display = 'block'; }
-      else { titleEl.style.display = 'none'; }
-
-      renderResult(posts);
-    })
-    .catch(function(err) {
-      showError(err.message);
-    })
-    .finally(function() {
-      document.getElementById('loading').style.display = 'none';
-      document.getElementById('calc-btn').disabled = false;
-    });
-}
-
-function renderResult(posts) {
-  var pool = 0, score = 0, maxPool = 0, collectCount = 0, visit17 = 0;
-  var events = [];
-  var chartData = [];
-
-  for (var i = 0; i < posts.length; i++) {
-    var post = posts[i];
-    pool += 1;
-
-    var rule = RULES[post.sec];
-    if (rule) {
-      if (rule.type === 'collect') {
-        if (pool > 0) {
-          score += pool;
-          collectCount++;
-          events.push({ num: post.num, date: post.date, label: rule.label, delta: pool, type: 'collect' });
-          pool = 0;
-        } else {
-          events.push({ num: post.num, date: post.date, label: rule.label, delta: 0, type: 'collect-empty' });
-        }
-      } else if (rule.type === 'score') {
         if (post.sec === '17') visit17++;
+        if (post.sec === '14') count14++;
+        if (post.sec === '20') count20++;
+        if (post.sec === '27') count27++;
+        if (post.sec === '52') count52++;
+        if (post.sec === '57') count57++;
         score += rule.delta;
         if (score < 0) score = 0;
         var evType = rule.delta > 0 ? 'plus' : rule.delta < 0 ? 'minus' : 'zero';
         events.push({ num: post.num, date: post.date, label: rule.label, delta: rule.delta, type: evType });
       }
     }
-
     if (pool > maxPool) maxPool = pool;
     chartData.push({ idx: i, pool: pool, score: score });
   }
@@ -502,7 +278,12 @@ function renderResult(posts) {
   document.getElementById('stat-pool').textContent = pool.toLocaleString() + ' 匹';
   document.getElementById('stat-00').textContent = collectCount + ' 回';
   document.getElementById('stat-maxpool').textContent = maxPool.toLocaleString() + ' 匹';
-  document.getElementById('stat-17').textContent = visit17.toLocaleString() + ' 回';
+  document.getElementById('stat-17').textContent = visit17 + ' 回';
+  document.getElementById('stat-14').textContent = count14 + ' 匹';
+  document.getElementById('stat-20').textContent = count20 + ' 回';
+  document.getElementById('stat-27').textContent = count27 + ' 匹';
+  document.getElementById('stat-52').textContent = count52 + ' 匹';
+  document.getElementById('stat-57').textContent = count57 + ' 回';
 
   var logRows = document.getElementById('log-rows');
   logRows.innerHTML = '';
@@ -511,12 +292,12 @@ function renderResult(posts) {
   } else {
     for (var j = 0; j < events.length; j++) {
       var ev = events[j];
-      var dc = '', ds = '';
-      if (ev.type === 'collect')       { dc = 'delta-get';   ds = '+' + ev.delta + '匹 保護！'; }
+      var dc, ds;
+      if (ev.type === 'collect')        { dc = 'delta-get';   ds = '+' + ev.delta + '匹 保護！'; }
       else if (ev.type === 'collect-empty') { dc = 'delta-zero'; ds = '(空)'; }
-      else if (ev.type === 'plus')     { dc = 'delta-plus';  ds = '+' + ev.delta; }
-      else if (ev.type === 'minus')    { dc = 'delta-minus'; ds = '' + ev.delta; }
-      else                             { dc = 'delta-zero';  ds = '±0'; }
+      else if (ev.type === 'plus')      { dc = 'delta-plus';  ds = '+' + ev.delta; }
+      else if (ev.type === 'minus')     { dc = 'delta-minus'; ds = '' + ev.delta; }
+      else                              { dc = 'delta-zero';  ds = '±0'; }
       var row = document.createElement('div');
       row.className = 'log-row';
       row.innerHTML = '<span class="log-res">&gt;&gt;' + ev.num + '</span>'
@@ -542,16 +323,15 @@ function drawChart(data) {
   canvas.style.width = W + 'px';
   canvas.style.height = H + 'px';
   ctx.scale(dpr, dpr);
-
   if (data.length < 2) return;
 
   var poolVals  = data.map(function(d) { return d.pool; });
   var scoreVals = data.map(function(d) { return d.score; });
-  var allVals   = poolVals.concat(scoreVals);
-  var maxVal    = Math.max.apply(null, allVals.concat([1]));
-  var minVal    = Math.min.apply(null, allVals.concat([0]));
-  var range     = maxVal - minVal || 1;
-  var pad       = { top: 16, right: 16, bottom: 28, left: 44 };
+  var allVals = poolVals.concat(scoreVals);
+  var maxVal = Math.max.apply(null, allVals.concat([1]));
+  var minVal = Math.min.apply(null, allVals.concat([0]));
+  var range = maxVal - minVal || 1;
+  var pad = { top: 16, right: 16, bottom: 28, left: 44 };
   var gW = W - pad.left - pad.right;
   var gH = H - pad.top - pad.bottom;
 
@@ -570,7 +350,6 @@ function drawChart(data) {
 
   function toX(i) { return pad.left + (i / (data.length - 1)) * gW; }
   function toY(v) { return pad.top + gH - ((v - minVal) / range) * gH; }
-
   function drawLine(vals, color) {
     ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.lineJoin = 'round';
     for (var k = 0; k < vals.length; k++) {
@@ -584,785 +363,16 @@ function drawChart(data) {
   drawLine(scoreVals, '#5ef0c8');
 
   ctx.fillStyle = '#7b82a8'; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
-  var labelIdxs = [0, Math.floor(data.length / 2), data.length - 1];
-  for (var li = 0; li < labelIdxs.length; li++) {
-    ctx.fillText('>>' + (labelIdxs[li] + 1), toX(labelIdxs[li]), H - 8);
+  var idxs = [0, Math.floor(data.length / 2), data.length - 1];
+  for (var li = 0; li < idxs.length; li++) {
+    ctx.fillText('>>' + (idxs[li] + 1), toX(idxs[li]), H - 8);
   }
-
   ctx.font = '11px sans-serif'; ctx.textAlign = 'left';
   ctx.fillStyle = '#c9d6ff'; ctx.fillRect(pad.left, 4, 12, 8);
   ctx.fillStyle = '#eef0ff'; ctx.fillText('プール', pad.left + 16, 12);
   ctx.fillStyle = '#5ef0c8'; ctx.fillRect(pad.left + 72, 4, 12, 8);
   ctx.fillStyle = '#eef0ff'; ctx.fillText('保護', pad.left + 88, 12);
 }
-</script>
-</body>
-</html>
->
-      <span>📝 イベントログ（特殊秒のみ）</span>
-      <button class="log-toggle" onclick="toggleLog(this)">折りたたむ</button>
-    </div>
-    <div id="log-body">
-      <div id="log-rows"></div>
-    </div>
-  </div>
-  <div class="log-section" style="margin-top:1.5rem;">
-    <div class="log-header"><span>📈 プール・保護の推移</span></div>
-    <div style="padding:1rem;">
-      <canvas id="chart" style="width:100%;max-height:220px;"></canvas>
-    </div>
-  </div>
-</section>
-
-<section class="rules-section">
-  <details>
-    <summary>ルール一覧</summary>
-    <div class="rules-list">
-      <div class="rule-row"><span class="rule-sec">全秒</span><span class="rule-desc">書き込み1件 → プールに+1匹</span></div>
-      <div class="rule-row"><span class="rule-sec">:00</span><span class="rule-desc">🪤 プール全回収（保護）</span></div>
-      <div class="rule-row"><span class="rule-sec">:14</span><span class="rule-desc">|ｲ•᷄ - •᷅|𐙚|| があにょを連れてくる（保護+10匹）</span></div>
-      <div class="rule-row"><span class="rule-sec">:17</span><span class="rule-desc">ᶘｲ^⇁^ﾅ川 が遊びに来る（保護±0）</span></div>
-      <div class="rule-row"><span class="rule-sec">:20</span><span class="rule-desc">uism が chk に絆されてどこかへ（保護+10匹）</span></div>
-      <div class="rule-row"><span class="rule-sec">:27</span><span class="rule-desc">😨 uism に襲われる（保護−30匹）</span></div>
-      <div class="rule-row"><span class="rule-sec">:52</span><span class="rule-desc">😱 梢に襲われる（保護−10匹）</span></div>
-      <div class="rule-row"><span class="rule-sec">:57</span><span class="rule-desc">knknc が供給（保護+20匹）</span></div>
-    </div>
-  </details>
-</section>
-
-<script>
-  // ── ルール定義 ──
-  // ルール変更はここだけ編集すればOK！
-  // type: 'collect' → :00専用（プール全回収して保護へ）
-  // type: 'score'   → 保護数を直接増減（プールに影響なし）
-  const RULES = {
-    '00': { label: '🪤 罠回収！プールのあにょを保護', type: 'collect' },
-    '14': { label: '|ｲ•᷄ - •᷅|𐙚|| があにょを連れてくる', delta: 10,  type: 'score' },
-    '17': { label: 'ᶘｲ^⇁^ﾅ川 が遊びに来る',              delta: 0,   type: 'score' },
-    '20': { label: 'uism が chk に絆されてどこかへ',        delta: 10,  type: 'score' },
-    '27': { label: 'uism に襲われる！',                    delta: -30, type: 'score' },
-    '52': { label: '梢に襲われる！',                       delta: -10, type: 'score' },
-    '57': { label: 'knknc が供給される',                   delta: 20,  type: 'score' },
-  };
-
-  let logCollapsed = false;
-
-  function toggleLog(btn) {
-    const body = document.getElementById('log-body');
-    logCollapsed = !logCollapsed;
-    body.classList.toggle('collapsed', logCollapsed);
-    btn.textContent = logCollapsed ? '展開する' : '折りたたむ';
-  }
-
-  // したらばURLからrawmodeのURLを作る
-  // 入力: https://jbbs.shitaraba.net/bbs/read.cgi/CATEGORY/BBS/THREAD/
-  // 出力: https://jbbs.shitaraba.net/bbs/rawmode.cgi/CATEGORY/BBS/THREAD/1-
-  function toRawUrl(inputUrl) {
-    const u = inputUrl.trim().replace(/\/$/, '');
-    // read.cgi形式 → rawmode.cgi
-    const m = u.match(/jbbs\.shitaraba\.net\/bbs\/read\.cgi\/([^/]+\/[^/]+\/[^/]+)/);
-    if (m) {
-      return `https://jbbs.shitaraba.net/bbs/rawmode.cgi/${m[1]}/1-`;
-    }
-    // すでにrawmode.cgiならそのまま
-    if (u.includes('rawmode.cgi')) return u;
-    // 直接 /category/bbs/thread 形式
-    const m2 = u.match(/jbbs\.shitaraba\.net\/([^/]+\/\d+\/\d+)/);
-    if (m2) {
-      return `https://jbbs.shitaraba.net/bbs/rawmode.cgi/${m2[1]}/1-`;
-    }
-    return null;
-  }
-
-  function showError(msg) {
-    const el = document.getElementById('error-box');
-    el.textContent = '⚠️ ' + msg;
-    el.style.display = 'block';
-  }
-
-  function hideError() {
-    document.getElementById('error-box').style.display = 'none';
-  }
-
-  // rawmodeのパース
-  // 各行: レス番号<>名前<>メール<>日時<>本文<>スレタイ<>
-  // 日時例: 2024/01/15 12:34:56
-  function parseRaw(text) {
-    const lines = text.split('\n').filter(l => l.trim());
-    return lines.map(line => {
-      const parts = line.split('<>');
-      if (parts.length < 6) return null;
-      const num  = parts[0].trim();
-      const date = parts[3].trim(); // "2024/01/15 12:34:56"
-      const secMatch = date.match(/:(\d{2})$/);
-      if (!secMatch) return null;
-      const title = parts[5] ? parts[5].trim() : '';
-      return { num, date, sec: secMatch[1], title };
-    }).filter(Boolean);
-  }
-
-  async function startCalc() {
-    const input = document.getElementById('url-input').value.trim();
-    if (!input) return;
-
-    hideError();
-    document.getElementById('result').style.display = 'none';
-    document.getElementById('loading').style.display = 'block';
-    document.getElementById('calc-btn').disabled = true;
-
-    try {
-      const rawUrl = toRawUrl(input);
-      if (!rawUrl) {
-        throw new Error('URLの形式が正しくありません。したらば掲示板のスレURLを入力してください。');
-      }
-
-      // プロキシ経由で取得
-      const proxyUrl = `/api/fetch?url=${encodeURIComponent(rawUrl)}`;
-      const res = await fetch(proxyUrl);
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
-        throw new Error(err.error || `取得失敗 (${res.status})`);
-      }
-      const text = await res.text();
-
-      const posts = parseRaw(text);
-      if (posts.length === 0) {
-        throw new Error('書き込みが見つかりませんでした。URLを確認してください。');
-      }
-
-      // スレタイ（最初のレスのparts[5]）
-      const titleEl = document.getElementById('thread-title');
-      const titleText = posts[0]?.title || '';
-      if (titleText) {
-        titleEl.textContent = '📌 ' + titleText;
-        titleEl.style.display = 'block';
-      } else {
-        titleEl.style.display = 'none';
-      }
-
-      renderResult(posts);
-
-    } catch (err) {
-      showError(err.message);
-    } finally {
-      document.getElementById('loading').style.display = 'none';
-      document.getElementById('calc-btn').disabled = false;
-    }
-  }
-
-  function renderResult(posts) {
-    let pool = 0;      // 現在プールにいる匹数
-    let score = 0;     // 保護した合計
-    let maxPool = 0;
-    let collectCount = 0;
-    let visit17 = 0;   // ᶘｲ^⇁^ﾅ川の訪問回数
-    const events = [];
-    const chartHistory = []; // {num, pool, score} の推移
-
-    for (const post of posts) {
-      // まず書き込みで+1
-      pool += 1;
-
-      const rule = RULES[post.sec];
-
-      if (rule) {
-        if (rule.type === 'collect') {
-          // :00 → プール全回収して保護へ（+1してから）
-          if (pool > 0) {
-            score += pool;
-            collectCount++;
-            events.push({ num: post.num, date: post.date, label: rule.label, delta: pool, type: 'collect' });
-            pool = 0;
-          } else {
-            events.push({ num: post.num, date: post.date, label: rule.label, delta: 0, type: 'collect-empty' });
-          }
-        } else if (rule.type === 'score') {
-          // 保護数を直接増減（プールには影響しない）
-          if (post.sec === '17') visit17++;
-          score += rule.delta;
-          if (score < 0) score = 0;
-          const evType = rule.delta > 0 ? 'plus' : rule.delta < 0 ? 'minus' : 'zero';
-          events.push({ num: post.num, date: post.date, label: rule.label, delta: rule.delta, type: evType });
-        }
-      }
-
-      if (pool > maxPool) maxPool = pool;
-      chartHistory.push({ num: parseInt(post.num), pool, score }); // 全書き込みで記録
-    }
-
-    // 表示
-    document.getElementById('total-score').textContent = score.toLocaleString();
-    document.getElementById('stat-posts').textContent = posts.length.toLocaleString() + ' 件';
-    document.getElementById('stat-pool').textContent = pool.toLocaleString() + ' 匹';
-    document.getElementById('stat-00').textContent = collectCount + ' 回';
-    document.getElementById('stat-maxpool').textContent = maxPool.toLocaleString() + ' 匹';
-    document.getElementById('stat-17').textContent = visit17.toLocaleString() + ' 回';
-
-    // イベントログ
-    const logRows = document.getElementById('log-rows');
-    logRows.innerHTML = '';
-    if (events.length === 0) {
-      logRows.innerHTML = '<div class="log-row"><span class="log-event" style="color:var(--muted);grid-column:1/-1">特殊秒の書き込みはありませんでした</span></div>';
-    } else {
-      for (const ev of events) {
-        const row = document.createElement('div');
-        row.className = 'log-row';
-
-        let deltaClass = '';
-        let deltaStr = '';
-        if (ev.type === 'collect') {
-          deltaClass = 'delta-get';
-          deltaStr = `+${ev.delta}匹 保護！`;
-        } else if (ev.type === 'collect-empty') {
-          deltaClass = 'delta-zero';
-          deltaStr = '(空)';
-        } else if (ev.type === 'plus') {
-          deltaClass = 'delta-plus';
-          deltaStr = `+${ev.delta}`;
-        } else if (ev.type === 'minus') {
-          deltaClass = 'delta-minus';
-          deltaStr = `${ev.delta}`;
-        } else {
-          deltaClass = 'delta-zero';
-          deltaStr = '±0';
-        }
-
-        row.innerHTML = `
-          <span class="log-res">&gt;&gt;${ev.num}</span>
-          <span class="log-event">${ev.label}<br><span style="font-size:0.68rem;color:var(--muted)">${ev.date}</span></span>
-          <span class="log-delta ${deltaClass}">${deltaStr}</span>
-        `;
-        logRows.appendChild(row);
-      }
-    }
-
-    document.getElementById('result').style.display = 'block';
-
-    // グラフ描画
-    drawChart(chartHistory);
-
-    // スクロール
-    document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-
-
-  function drawChart(history) {
-    const canvas = document.getElementById('chart');
-    const ctx = canvas.getContext('2d');
-    const dpr = window.devicePixelRatio || 1;
-    const W = canvas.parentElement.clientWidth - 32;
-    const H = 200;
-    canvas.width = W * dpr;
-    canvas.height = H * dpr;
-    canvas.style.width = W + 'px';
-    canvas.style.height = H + 'px';
-    ctx.scale(dpr, dpr);
-
-    if (history.length < 2) return;
-
-    const poolVals  = history.map(h => h.pool);
-    const scoreVals = history.map(h => h.score);
-    const allVals   = [...poolVals, ...scoreVals];
-    const maxVal    = Math.max(...allVals, 1);
-    const minVal    = Math.min(...allVals, 0);
-    const range     = maxVal - minVal || 1;
-
-    const pad = { top: 12, right: 16, bottom: 28, left: 40 };
-    const gW = W - pad.left - pad.right;
-    const gH = H - pad.top - pad.bottom;
-
-    // 背景
-    ctx.fillStyle = '#0f3460';
-    ctx.fillRect(0, 0, W, H);
-
-    // Y>
-      <span>📝 イベントログ（特殊秒のみ）</span>
-      <button class="log-toggle" onclick="toggleLog(this)">折りたたむ</button>
-    </div>
-    <div id="log-body">
-      <div id="log-rows"></div>
-    </div>
-  </div>
-  <div class="log-section" style="margin-top:1.5rem;">
-    <div class="log-header"><span>📈 プール・保護の推移</span></div>
-    <div style="padding:1rem;">
-      <canvas id="chart" style="width:100%;max-height:220px;"></canvas>
-    </div>
-  </div>
-</section>
-
-<section class="rules-section">
-  <details>
-    <summary>ルール一覧</summary>
-    <div class="rules-list">
-      <div class="rule-row"><span class="rule-sec">全秒</span><span class="rule-desc">書き込み1件 → プールに+1匹</span></div>
-      <div class="rule-row"><span class="rule-sec">:00</span><span class="rule-desc">🪤 プール全回収（保護）</span></div>
-      <div class="rule-row"><span class="rule-sec">:14</span><span class="rule-desc">|ｲ•᷄ - •᷅|𐙚|| があにょを連れてくる（保護+10匹）</span></div>
-      <div class="rule-row"><span class="rule-sec">:17</span><span class="rule-desc">ᶘｲ^⇁^ﾅ川 が遊びに来る（保護±0）</span></div>
-      <div class="rule-row"><span class="rule-sec">:20</span><span class="rule-desc">uism が chk に絆されてどこかへ（保護+10匹）</span></div>
-      <div class="rule-row"><span class="rule-sec">:27</span><span class="rule-desc">😨 uism に襲われる（保護−30匹）</span></div>
-      <div class="rule-row"><span class="rule-sec">:52</span><span class="rule-desc">😱 梢に襲われる（保護−10匹）</span></div>
-      <div class="rule-row"><span class="rule-sec">:57</span><span class="rule-desc">knknc が供給（保護+20匹）</span></div>
-    </div>
-  </details>
-</section>
-
-<script>
-  // ── ルール定義 ──
-  // ルール変更はここだけ編集すればOK！
-  // type: 'collect' → :00専用（プール全回収して保護へ）
-  // type: 'score'   → 保護数を直接増減（プールに影響なし）
-  const RULES = {
-    '00': { label: '🪤 罠回収！プールのあにょを保護', type: 'collect' },
-    '14': { label: '|ｲ•᷄ - •᷅|𐙚|| があにょを連れてくる', delta: 10,  type: 'score' },
-    '17': { label: 'ᶘｲ^⇁^ﾅ川 が遊びに来る',              delta: 0,   type: 'score' },
-    '20': { label: 'uism が chk に絆されてどこかへ',        delta: 10,  type: 'score' },
-    '27': { label: 'uism に襲われる！',                    delta: -30, type: 'score' },
-    '52': { label: '梢に襲われる！',                       delta: -10, type: 'score' },
-    '57': { label: 'knknc が供給される',                   delta: 20,  type: 'score' },
-  };
-
-  let logCollapsed = false;
-
-  function toggleLog(btn) {
-    const body = document.getElementById('log-body');
-    logCollapsed = !logCollapsed;
-    body.classList.toggle('collapsed', logCollapsed);
-    btn.textContent = logCollapsed ? '展開する' : '折りたたむ';
-  }
-
-  // したらばURLからrawmodeのURLを作る
-  // 入力: https://jbbs.shitaraba.net/bbs/read.cgi/CATEGORY/BBS/THREAD/
-  // 出力: https://jbbs.shitaraba.net/bbs/rawmode.cgi/CATEGORY/BBS/THREAD/1-
-  function toRawUrl(inputUrl) {
-    const u = inputUrl.trim().replace(/\/$/, '');
-    // read.cgi形式 → rawmode.cgi
-    const m = u.match(/jbbs\.shitaraba\.net\/bbs\/read\.cgi\/([^/]+\/[^/]+\/[^/]+)/);
-    if (m) {
-      return `https://jbbs.shitaraba.net/bbs/rawmode.cgi/${m[1]}/1-`;
-    }
-    // すでにrawmode.cgiならそのまま
-    if (u.includes('rawmode.cgi')) return u;
-    // 直接 /category/bbs/thread 形式
-    const m2 = u.match(/jbbs\.shitaraba\.net\/([^/]+\/\d+\/\d+)/);
-    if (m2) {
-      return `https://jbbs.shitaraba.net/bbs/rawmode.cgi/${m2[1]}/1-`;
-    }
-    return null;
-  }
-
-  function showError(msg) {
-    const el = document.getElementById('error-box');
-    el.textContent = '⚠️ ' + msg;
-    el.style.display = 'block';
-  }
-
-  function hideError() {
-    document.getElementById('error-box').style.display = 'none';
-  }
-
-  // rawmodeのパース
-  // 各行: レス番号<>名前<>メール<>日時<>本文<>スレタイ<>
-  // 日時例: 2024/01/15 12:34:56
-  function parseRaw(text) {
-    const lines = text.split('\n').filter(l => l.trim());
-    return lines.map(line => {
-      const parts = line.split('<>');
-      if (parts.length < 6) return null;
-      const num  = parts[0].trim();
-      const date = parts[3].trim(); // "2024/01/15 12:34:56"
-      const secMatch = date.match(/:(\d{2})$/);
-      if (!secMatch) return null;
-      const title = parts[5] ? parts[5].trim() : '';
-      return { num, date, sec: secMatch[1], title };
-    }).filter(Boolean);
-  }
-
-  async function startCalc() {
-    const input = document.getElementById('url-input').value.trim();
-    if (!input) return;
-
-    hideError();
-    document.getElementById('result').style.display = 'none';
-    document.getElementById('loading').style.display = 'block';
-    document.getElementById('calc-btn').disabled = true;
-
-    try {
-      const rawUrl = toRawUrl(input);
-      if (!rawUrl) {
-        throw new Error('URLの形式が正しくありません。したらば掲示板のスレURLを入力してください。');
-      }
-
-      // プロキシ経由で取得
-      const proxyUrl = `/api/fetch?url=${encodeURIComponent(rawUrl)}`;
-      const res = await fetch(proxyUrl);
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
-        throw new Error(err.error || `取得失敗 (${res.status})`);
-      }
-      const text = await res.text();
-
-      const posts = parseRaw(text);
-      if (posts.length === 0) {
-        throw new Error('書き込みが見つかりませんでした。URLを確認してください。');
-      }
-
-      // スレタイ（最初のレスのparts[5]）
-      const titleEl = document.getElementById('thread-title');
-      const titleText = posts[0]?.title || '';
-      if (titleText) {
-        titleEl.textContent = '📌 ' + titleText;
-        titleEl.style.display = 'block';
-      } else {
-        titleEl.style.display = 'none';
-      }
-
-      renderResult(posts);
-
-    } catch (err) {
-      showError(err.message);
-    } finally {
-      document.getElementById('loading').style.display = 'none';
-      document.getElementById('calc-btn').disabled = false;
-    }
-  }
-
-  function renderResult(posts) {
-    let pool = 0;      // 現在プールにいる匹数
-    let score = 0;     // 保護した合計
-    let maxPool = 0;
-    let collectCount = 0;
-    let visit17 = 0;   // ᶘｲ^⇁^ﾅ川の訪問回数
-    const events = [];
-    const history = []; // {num, pool, score} の推移
-
-    for (const post of posts) {
-      // まず書き込みで+1
-      pool += 1;
-
-      const rule = RULES[post.sec];
-
-      if (rule) {
-        if (rule.type === 'collect') {
-          // :00 → プール全回収して保護へ（+1してから）
-          if (pool > 0) {
-            score += pool;
-            collectCount++;
-            events.push({ num: post.num, date: post.date, label: rule.label, delta: pool, type: 'collect' });
-            pool = 0;
-          } else {
-            events.push({ num: post.num, date: post.date, label: rule.label, delta: 0, type: 'collect-empty' });
-          }
-        } else if (rule.type === 'score') {
-          // 保護数を直接増減（プールには影響しない）
-          if (post.sec === '17') visit17++;
-          score += rule.delta;
-          if (score < 0) score = 0;
-          const evType = rule.delta > 0 ? 'plus' : rule.delta < 0 ? 'minus' : 'zero';
-          events.push({ num: post.num, date: post.date, label: rule.label, delta: rule.delta, type: evType });
-        }
-      }
-
-      if (pool > maxPool) maxPool = pool;
-      history.push({ num: parseInt(post.num), pool, score }); // 全書き込みで記録
-    }
-
-    // 表示
-    document.getElementById('total-score').textContent = score.toLocaleString();
-    document.getElementById('stat-posts').textContent = posts.length.toLocaleString() + ' 件';
-    document.getElementById('stat-pool').textContent = pool.toLocaleString() + ' 匹';
-    document.getElementById('stat-00').textContent = collectCount + ' 回';
-    document.getElementById('stat-maxpool').textContent = maxPool.toLocaleString() + ' 匹';
-    document.getElementById('stat-17').textContent = visit17.toLocaleString() + ' 回';
-
-    // イベントログ
-    const logRows = document.getElementById('log-rows');
-    logRows.innerHTML = '';
-    if (events.length === 0) {
-      logRows.innerHTML = '<div class="log-row"><span class="log-event" style="color:var(--muted);grid-column:1/-1">特殊秒の書き込みはありませんでした</span></div>';
-    } else {
-      for (const ev of events) {
-        const row = document.createElement('div');
-        row.className = 'log-row';
-
-        let deltaClass = '';
-        let deltaStr = '';
-        if (ev.type === 'collect') {
-          deltaClass = 'delta-get';
-          deltaStr = `+${ev.delta}匹 保護！`;
-        } else if (ev.type === 'collect-empty') {
-          deltaClass = 'delta-zero';
-          deltaStr = '(空)';
-        } else if (ev.type === 'plus') {
-          deltaClass = 'delta-plus';
-          deltaStr = `+${ev.delta}`;
-        } else if (ev.type === 'minus') {
-          deltaClass = 'delta-minus';
-          deltaStr = `${ev.delta}`;
-        } else {
-          deltaClass = 'delta-zero';
-          deltaStr = '±0';
-        }
-
-        row.innerHTML = `
-          <span class="log-res">&gt;&gt;${ev.num}</span>
-          <span class="log-event">${ev.label}<br><span style="font-size:0.68rem;color:var(--muted)">${ev.date}</span></span>
-          <span class="log-delta ${deltaClass}">${deltaStr}</span>
-        `;
-        logRows.appendChild(row);
-      }
-    }
-
-    document.getElementById('result').style.display = 'block';
-
-    // グラフ描画
-    drawChart(history);
-
-    // スクロール
-    document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-
-
-  function drawChart(history) {
-    const canvas = document.getElementById('chart');
-    const ctx = canvas.getContext('2d');
-    const dpr = window.devicePixelRatio || 1;
-    const W = canvas.parentElement.clientWidth - 32;
-    const H = 200;
-    canvas.width = W * dpr;
-    canvas.height = H * dpr;
-    canvas.style.width = W + 'px';
-    canvas.style.height = H + 'px';
-    ctx.scale(dpr, dpr);
-
-    if (history.length < 2) return;
-
-    const poolVals  = history.map(h => h.pool);
-    const scoreVals = history.map(h => h.score);
-    const allVals   = [...poolVals, ...scoreVals];
-    const maxVal    = Math.max(...allVals, 1);
-    const minVal    = Math.min(...allVals, 0);
-    const range     = maxVal - minVal || 1;
-
-    const pad = { top: 12, right: 16, bottom: 28, left: 40 };
-    const gW = W - pad.left - pad.right;
-    const gH = H - pad.top - pad.bottom;
-
-    // 背景
-    ctx.fillStyle = '#0f3460';
-    ctx.roundRect(0, 0, W, H, 8);
-    ctx.fill();
-
-   <div class="rule-row"><span class="rule-sec">:00</span><span class="rule-desc">🪤 プール全回収（保護）</span></div>
-      <div class="rule-row"><span class="rule-sec">:14</span><span class="rule-desc">|ｲ•᷄ - •᷅|𐙚|| がプール+10匹連れてくる</span></div>
-      <div class="rule-row"><span class="rule-sec">:17</span><span class="rule-desc">ᶘｲ^⇁^ﾅ川 が遊びに来る（プラマイ0）</span></div>
-      <div class="rule-row"><span class="rule-sec">:20</span><span class="rule-desc">uism が chk に絆されてどこかへ… プール+10匹</span></div>
-      <div class="rule-row"><span class="rule-sec">:27</span><span class="rule-desc">😨 uism に襲われる プール−30匹</span></div>
-      <div class="rule-row"><span class="rule-sec">:52</span><span class="rule-desc">😱 梢に襲われる プール−10匹</span></div>
-      <div class="rule-row"><span class="rule-sec">:57</span><span class="rule-desc">knkncが供給 プール+20匹</span></div>
-    </div>
-  </details>
-</section>
-
-<script>
-  // ── ルール定義 ──
-  // ルール変更はここだけ編集すればOK！
-  // type: 'collect' → :00専用（プール全回収して保護へ）
-  // type: 'score'   → 保護数を直接増減（プールに影響なし）
-  const RULES = {
-    '00': { label: '🪤 罠回収！プールのあにょを保護', type: 'collect' },
-    '14': { label: '|ｲ•᷄ - •᷅|𐙚|| があにょを連れてくる', delta: 10,  type: 'score' },
-    '17': { label: 'ᶘｲ^⇁^ﾅ川 が遊びに来る',              delta: 0,   type: 'score' },
-    '20': { label: 'uism が chk に絆されてどこかへ',        delta: 10,  type: 'score' },
-    '27': { label: 'uism に襲われる！',                    delta: -30, type: 'score' },
-    '52': { label: '梢に襲われる！',                       delta: -10, type: 'score' },
-    '57': { label: 'knknc が供給される',                   delta: 20,  type: 'score' },
-  };
-
-  let logCollapsed = false;
-
-  function toggleLog(btn) {
-    const body = document.getElementById('log-body');
-    logCollapsed = !logCollapsed;
-    body.classList.toggle('collapsed', logCollapsed);
-    btn.textContent = logCollapsed ? '展開する' : '折りたたむ';
-  }
-
-  // したらばURLからrawmodeのURLを作る
-  // 入力: https://jbbs.shitaraba.net/bbs/read.cgi/CATEGORY/BBS/THREAD/
-  // 出力: https://jbbs.shitaraba.net/bbs/rawmode.cgi/CATEGORY/BBS/THREAD/1-
-  function toRawUrl(inputUrl) {
-    const u = inputUrl.trim().replace(/\/$/, '');
-    // read.cgi形式 → rawmode.cgi
-    const m = u.match(/jbbs\.shitaraba\.net\/bbs\/read\.cgi\/([^/]+\/[^/]+\/[^/]+)/);
-    if (m) {
-      return `https://jbbs.shitaraba.net/bbs/rawmode.cgi/${m[1]}/1-`;
-    }
-    // すでにrawmode.cgiならそのまま
-    if (u.includes('rawmode.cgi')) return u;
-    // 直接 /category/bbs/thread 形式
-    const m2 = u.match(/jbbs\.shitaraba\.net\/([^/]+\/\d+\/\d+)/);
-    if (m2) {
-      return `https://jbbs.shitaraba.net/bbs/rawmode.cgi/${m2[1]}/1-`;
-    }
-    return null;
-  }
-
-  function showError(msg) {
-    const el = document.getElementById('error-box');
-    el.textContent = '⚠️ ' + msg;
-    el.style.display = 'block';
-  }
-
-  function hideError() {
-    document.getElementById('error-box').style.display = 'none';
-  }
-
-  // rawmodeのパース
-  // 各行: レス番号<>名前<>メール<>日時<>本文<>スレタイ<>
-  // 日時例: 2024/01/15 12:34:56
-  function parseRaw(text) {
-    const lines = text.split('\n').filter(l => l.trim());
-    return lines.map(line => {
-      const parts = line.split('<>');
-      if (parts.length < 6) return null;
-      const num  = parts[0].trim();
-      const date = parts[3].trim(); // "2024/01/15 12:34:56"
-      const secMatch = date.match(/:(\d{2})$/);
-      if (!secMatch) return null;
-      return { num, date, sec: secMatch[1] };
-    }).filter(Boolean);
-  }
-
-  async function startCalc() {
-    const input = document.getElementById('url-input').value.trim();
-    if (!input) return;
-
-    hideError();
-    document.getElementById('result').style.display = 'none';
-    document.getElementById('loading').style.display = 'block';
-    document.getElementById('calc-btn').disabled = true;
-
-    try {
-      const rawUrl = toRawUrl(input);
-      if (!rawUrl) {
-        throw new Error('URLの形式が正しくありません。したらば掲示板のスレURLを入力してください。');
-      }
-
-      // プロキシ経由で取得
-      const proxyUrl = `/api/fetch?url=${encodeURIComponent(rawUrl)}`;
-      const res = await fetch(proxyUrl);
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
-        throw new Error(err.error || `取得失敗 (${res.status})`);
-      }
-      const text = await res.text();
-
-      const posts = parseRaw(text);
-      if (posts.length === 0) {
-        throw new Error('書き込みが見つかりませんでした。URLを確認してください。');
-      }
-
-      renderResult(posts);
-
-    } catch (err) {
-      showError(err.message);
-    } finally {
-      document.getElementById('loading').style.display = 'none';
-      document.getElementById('calc-btn').disabled = false;
-    }
-  }
-
-  function renderResult(posts) {
-    let pool = 0;      // 現在プールにいる匹数
-    let score = 0;     // 保護した合計
-    let maxPool = 0;
-    let collectCount = 0;
-    const events = [];
-
-    for (const post of posts) {
-      // まず書き込みで+1
-      pool += 1;
-
-      const rule = RULES[post.sec];
-      if (!rule) continue; // 特殊秒でない → プール+1だけ
-
-      if (rule.type === 'collect') {
-        // :00 → プール全回収して保護へ（+1してから）
-        if (pool > 0) {
-          score += pool;
-          collectCount++;
-          events.push({ num: post.num, date: post.date, label: rule.label, delta: pool, type: 'collect' });
-          pool = 0;
-        } else {
-          events.push({ num: post.num, date: post.date, label: rule.label, delta: 0, type: 'collect-empty' });
-        }
-      } else if (rule.type === 'score') {
-        // 保護数を直接増減（プールには影響しない）
-        score += rule.delta;
-        if (score < 0) score = 0;
-        const evType = rule.delta > 0 ? 'plus' : rule.delta < 0 ? 'minus' : 'zero';
-        events.push({ num: post.num, date: post.date, label: rule.label, delta: rule.delta, type: evType });
-      }
-
-      if (pool > maxPool) maxPool = pool;
-    }
-
-    // 表示
-    document.getElementById('total-score').textContent = score.toLocaleString();
-    document.getElementById('stat-posts').textContent = posts.length.toLocaleString() + ' 件';
-    document.getElementById('stat-pool').textContent = pool.toLocaleString() + ' 匹';
-    document.getElementById('stat-00').textContent = collectCount + ' 回';
-    document.getElementById('stat-maxpool').textContent = maxPool.toLocaleString() + ' 匹';
-
-    // イベントログ
-    const logRows = document.getElementById('log-rows');
-    logRows.innerHTML = '';
-    if (events.length === 0) {
-      logRows.innerHTML = '<div class="log-row"><span class="log-event" style="color:var(--muted);grid-column:1/-1">特殊秒の書き込みはありませんでした</span></div>';
-    } else {
-      for (const ev of events) {
-        const row = document.createElement('div');
-        row.className = 'log-row';
-
-        let deltaClass = '';
-        let deltaStr = '';
-        if (ev.type === 'collect') {
-          deltaClass = 'delta-get';
-          deltaStr = `+${ev.delta}匹 保護！`;
-        } else if (ev.type === 'collect-empty') {
-          deltaClass = 'delta-zero';
-          deltaStr = '(空)';
-        } else if (ev.type === 'plus') {
-          deltaClass = 'delta-plus';
-          deltaStr = `+${ev.delta}`;
-        } else if (ev.type === 'minus') {
-          deltaClass = 'delta-minus';
-          deltaStr = `${ev.delta}`;
-        } else {
-          deltaClass = 'delta-zero';
-          deltaStr = '±0';
-        }
-
-        row.innerHTML = `
-          <span class="log-res">&gt;&gt;${ev.num}</span>
-          <span class="log-event">${ev.label}<br><span style="font-size:0.68rem;color:var(--muted)">${ev.date}</span></span>
-          <span class="log-delta ${deltaClass}">${deltaStr}</span>
-        `;
-        logRows.appendChild(row);
-      }
-    }
-
-    document.getElementById('result').style.display = 'block';
-
-    // スクロール
-    document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-
-  // Enterキーでも集計できる
-  document.getElementById('url-input').addEventListener('keydown', e => {
-    if (e.key === 'Enter') startCalc();
-  });
 </script>
 </body>
 </html>
