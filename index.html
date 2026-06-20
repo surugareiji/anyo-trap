@@ -4,315 +4,66 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>あにょざらし罠🪤集計</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg:        #1a1a2e;
-      --surface:   #16213e;
-      --panel:     #0f3460;
-      --accent:    #e94560;
-      --gold:      #f5c842;
-      --mint:      #5ef0c8;
-      --soft:      #c9d6ff;
-      --text:      #eef0ff;
-      --muted:     #7b82a8;
-      --trap:      #ff6b6b;
-      --plus:      #5ef0c8;
-      --minus:     #ff6b6b;
-      --zero:      #f5c842;
+      --bg: #1a1a2e; --surface: #16213e; --panel: #0f3460;
+      --accent: #e94560; --gold: #f5c842; --mint: #5ef0c8;
+      --soft: #c9d6ff; --text: #eef0ff; --muted: #7b82a8;
+      --plus: #5ef0c8; --minus: #ff6b6b; --zero: #f5c842;
     }
-
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: 'Noto Sans JP', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      padding: 1.5rem 1rem 4rem;
-    }
-
-    /* ── ヘッダー ── */
-    header {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-    .trap-icon {
-      font-size: 3.5rem;
-      display: block;
-      animation: bounce 2s ease-in-out infinite;
-    }
-    @keyframes bounce {
-      0%,100% { transform: translateY(0); }
-      50%      { transform: translateY(-8px); }
-    }
-    h1 {
-      font-size: clamp(1.4rem, 5vw, 2rem);
-      font-weight: 900;
-      letter-spacing: 0.02em;
-      margin-top: 0.4rem;
-      background: linear-gradient(135deg, var(--soft), var(--mint));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .subtitle {
-      font-size: 0.8rem;
-      color: var(--muted);
-      margin-top: 0.3rem;
-    }
-
-    /* ── 入力エリア ── */
-    .input-section {
-      max-width: 640px;
-      margin: 0 auto 2rem;
-    }
-    .input-row {
-      display: flex;
-      gap: 0.5rem;
-    }
-    input[type="text"] {
-      flex: 1;
-      background: var(--surface);
-      border: 1.5px solid var(--panel);
-      border-radius: 10px;
-      color: var(--text);
-      font-family: inherit;
-      font-size: 0.9rem;
-      padding: 0.75rem 1rem;
-      outline: none;
-      transition: border-color 0.2s;
-    }
+    body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 1.5rem 1rem 4rem; }
+    header { text-align: center; margin-bottom: 2rem; }
+    .trap-icon { font-size: 3.5rem; display: block; animation: bounce 2s ease-in-out infinite; }
+    @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+    h1 { font-size: clamp(1.4rem,5vw,2rem); font-weight: 900; margin-top: .4rem; background: linear-gradient(135deg,var(--soft),var(--mint)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .subtitle { font-size: .8rem; color: var(--muted); margin-top: .3rem; }
+    .input-section { max-width: 640px; margin: 0 auto 2rem; }
+    .input-row { display: flex; gap: .5rem; }
+    input[type="text"] { flex: 1; background: var(--surface); border: 1.5px solid var(--panel); border-radius: 10px; color: var(--text); font-family: inherit; font-size: .9rem; padding: .75rem 1rem; outline: none; transition: border-color .2s; }
     input[type="text"]:focus { border-color: var(--mint); }
     input[type="text"]::placeholder { color: var(--muted); }
-
-    button {
-      background: linear-gradient(135deg, var(--accent), #c0392b);
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      font-family: inherit;
-      font-size: 0.9rem;
-      font-weight: 700;
-      padding: 0.75rem 1.4rem;
-      cursor: pointer;
-      transition: opacity 0.2s, transform 0.1s;
-      white-space: nowrap;
-    }
-    button:hover { opacity: 0.88; }
-    button:active { transform: scale(0.97); }
-    button:disabled { opacity: 0.4; cursor: not-allowed; }
-
-    .hint {
-      font-size: 0.75rem;
-      color: var(--muted);
-      margin-top: 0.5rem;
-      text-align: center;
-    }
-
-    /* ── ローディング ── */
-    #loading {
-      display: none;
-      text-align: center;
-      padding: 2rem;
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
-    .spinner {
-      width: 32px; height: 32px;
-      border: 3px solid var(--panel);
-      border-top-color: var(--mint);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin: 0 auto 0.8rem;
-    }
+    button#calc-btn { background: linear-gradient(135deg,var(--accent),#c0392b); color: #fff; border: none; border-radius: 10px; font-family: inherit; font-size: .9rem; font-weight: 700; padding: .75rem 1.4rem; cursor: pointer; white-space: nowrap; }
+    button#calc-btn:disabled { opacity: .4; cursor: not-allowed; }
+    .hint { font-size: .75rem; color: var(--muted); margin-top: .5rem; text-align: center; }
+    #loading { display: none; text-align: center; padding: 2rem; color: var(--muted); font-size: .9rem; }
+    .spinner { width: 32px; height: 32px; border: 3px solid var(--panel); border-top-color: var(--mint); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto .8rem; }
     @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ── エラー ── */
-    #error-box {
-      display: none;
-      max-width: 640px;
-      margin: 0 auto 1.5rem;
-      background: rgba(233,69,96,0.15);
-      border: 1px solid var(--accent);
-      border-radius: 10px;
-      padding: 0.8rem 1rem;
-      font-size: 0.85rem;
-      color: #ffaaaa;
-    }
-
-    /* ── 結果エリア ── */
-    #result {
-      display: none;
-      max-width: 640px;
-      margin: 0 auto;
-    }
-
-    /* ── スコアカード ── */
-    .score-card {
-      background: var(--surface);
-      border: 1.5px solid var(--panel);
-      border-radius: 16px;
-      padding: 1.5rem 1.5rem 1.2rem;
-      margin-bottom: 1.5rem;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-    .score-card::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse at top, rgba(94,240,200,0.08) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    .score-label {
-      font-size: 0.75rem;
-      letter-spacing: 0.12em;
-      color: var(--muted);
-      text-transform: uppercase;
-      margin-bottom: 0.5rem;
-    }
-    .score-num {
-      font-size: clamp(3rem, 12vw, 5rem);
-      font-weight: 900;
-      line-height: 1;
-      color: var(--mint);
-      text-shadow: 0 0 30px rgba(94,240,200,0.4);
-    }
-    .score-unit {
-      font-size: 1rem;
-      color: var(--muted);
-      margin-top: 0.4rem;
-    }
-
-    /* ── 統計グリッド ── */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 0.75rem;
-      margin-bottom: 1.5rem;
-    }
-    .stat-item {
-      background: var(--surface);
-      border: 1px solid var(--panel);
-      border-radius: 12px;
-      padding: 0.9rem 1rem;
-    }
-    .stat-label {
-      font-size: 0.7rem;
-      color: var(--muted);
-      margin-bottom: 0.3rem;
-    }
-    .stat-val {
-      font-size: 1.3rem;
-      font-weight: 700;
-    }
-
-    /* ── イベントログ ── */
-    .log-section {
-      background: var(--surface);
-      border: 1px solid var(--panel);
-      border-radius: 12px;
-      overflow: hidden;
-    }
-    .log-header {
-      background: var(--panel);
-      padding: 0.65rem 1rem;
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: var(--soft);
-      letter-spacing: 0.05em;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .log-toggle {
-      background: none;
-      border: none;
-      color: var(--muted);
-      font-size: 0.75rem;
-      cursor: pointer;
-      padding: 0.1rem 0.4rem;
-      border-radius: 4px;
-    }
-    .log-toggle:hover { background: rgba(255,255,255,0.08); }
-    #log-body {
-      max-height: 360px;
-      overflow-y: auto;
-      scrollbar-width: thin;
-      scrollbar-color: var(--panel) transparent;
-    }
+    #error-box { display: none; max-width: 640px; margin: 0 auto 1.5rem; background: rgba(233,69,96,.15); border: 1px solid var(--accent); border-radius: 10px; padding: .8rem 1rem; font-size: .85rem; color: #ffaaaa; word-break: break-all; }
+    #result { display: none; max-width: 640px; margin: 0 auto; }
+    #thread-title { display: none; text-align: center; margin-bottom: 1rem; font-size: .9rem; font-weight: 700; color: var(--soft); word-break: break-all; padding: .5rem 1rem; background: var(--surface); border: 1px solid var(--panel); border-radius: 10px; }
+    .score-card { background: var(--surface); border: 1.5px solid var(--panel); border-radius: 16px; padding: 1.5rem 1.5rem 1.2rem; margin-bottom: 1.5rem; text-align: center; }
+    .score-label { font-size: .75rem; letter-spacing: .12em; color: var(--muted); text-transform: uppercase; margin-bottom: .5rem; }
+    .score-num { font-size: clamp(3rem,12vw,5rem); font-weight: 900; line-height: 1; color: var(--mint); }
+    .score-unit { font-size: 1rem; color: var(--muted); margin-top: .4rem; }
+    .stats-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: .75rem; margin-bottom: 1.5rem; }
+    .stat-item { background: var(--surface); border: 1px solid var(--panel); border-radius: 12px; padding: .9rem 1rem; }
+    .stat-label { font-size: .7rem; color: var(--muted); margin-bottom: .3rem; }
+    .stat-val { font-size: 1.3rem; font-weight: 700; }
+    .log-section { background: var(--surface); border: 1px solid var(--panel); border-radius: 12px; overflow: hidden; margin-bottom: 1.5rem; }
+    .log-header { background: var(--panel); padding: .65rem 1rem; font-size: .8rem; font-weight: 700; color: var(--soft); display: flex; justify-content: space-between; align-items: center; }
+    .log-toggle { background: none; border: 1px solid rgba(255,255,255,.2); color: var(--muted); font-size: .75rem; cursor: pointer; padding: .1rem .5rem; border-radius: 4px; font-family: inherit; }
+    #log-body { max-height: 360px; overflow-y: auto; }
     #log-body.collapsed { display: none; }
-    .log-row {
-      display: grid;
-      grid-template-columns: 3.5rem 1fr auto;
-      gap: 0.5rem;
-      align-items: center;
-      padding: 0.5rem 1rem;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
-      font-size: 0.82rem;
-    }
+    .log-row { display: grid; grid-template-columns: 3.5rem 1fr auto; gap: .5rem; align-items: center; padding: .5rem 1rem; border-bottom: 1px solid rgba(255,255,255,.04); font-size: .82rem; }
     .log-row:last-child { border-bottom: none; }
-    .log-res {
-      color: var(--muted);
-      font-size: 0.72rem;
-      white-space: nowrap;
-    }
+    .log-res { color: var(--muted); font-size: .72rem; }
     .log-event { color: var(--text); line-height: 1.35; }
-    .log-delta {
-      font-weight: 700;
-      white-space: nowrap;
-      font-size: 0.8rem;
-    }
-    .delta-plus  { color: var(--plus); }
-    .delta-minus { color: var(--minus); }
-    .delta-zero  { color: var(--zero); }
-    .delta-get   { color: var(--gold); }
-
-    /* ── ルール凡例 ── */
-    .rules-section {
-      max-width: 640px;
-      margin: 1.5rem auto 0;
-    }
-    details {
-      background: var(--surface);
-      border: 1px solid var(--panel);
-      border-radius: 12px;
-      overflow: hidden;
-    }
-    summary {
-      padding: 0.7rem 1rem;
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: var(--muted);
-      cursor: pointer;
-      user-select: none;
-      list-style: none;
-    }
+    .log-delta { font-weight: 700; white-space: nowrap; font-size: .8rem; }
+    .delta-plus { color: var(--plus); } .delta-minus { color: var(--minus); } .delta-zero { color: var(--zero); } .delta-get { color: var(--gold); }
+    .chart-wrap { background: var(--surface); border: 1px solid var(--panel); border-radius: 12px; padding: 1rem; }
+    .chart-title { font-size: .8rem; font-weight: 700; color: var(--soft); margin-bottom: .75rem; }
+    canvas { display: block; width: 100%; }
+    .rules-section { max-width: 640px; margin: 1.5rem auto 0; }
+    details { background: var(--surface); border: 1px solid var(--panel); border-radius: 12px; overflow: hidden; }
+    summary { padding: .7rem 1rem; font-size: .8rem; font-weight: 700; color: var(--muted); cursor: pointer; list-style: none; }
     summary::-webkit-details-marker { display: none; }
-    summary::before { content: '▶ '; font-size: 0.65rem; }
-    details[open] summary::before { content: '▼ '; }
-    .rules-list {
-      padding: 0 1rem 1rem;
-    }
-    .rule-row {
-      display: flex;
-      gap: 0.75rem;
-      align-items: flex-start;
-      padding: 0.35rem 0;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
-      font-size: 0.8rem;
-    }
+    .rules-list { padding: 0 1rem 1rem; }
+    .rule-row { display: flex; gap: .75rem; padding: .35rem 0; border-bottom: 1px solid rgba(255,255,255,.04); font-size: .8rem; }
     .rule-row:last-child { border-bottom: none; }
     .rule-sec { min-width: 2.5rem; font-weight: 700; color: var(--gold); }
     .rule-desc { color: var(--muted); line-height: 1.45; }
-
-    @media (max-width: 400px) {
-      .stats-grid { grid-template-columns: 1fr 1fr; }
-      .log-row { grid-template-columns: 3rem 1fr auto; font-size: 0.78rem; }
-    }
   </style>
 </head>
 <body>
@@ -320,59 +71,306 @@
 <header>
   <span class="trap-icon">🪤</span>
   <h1>あにょざらし罠 集計</h1>
-  <p class="subtitle">ʃ§ ( っ⁼´꒳`)っ何匹捕まえた？</p>
+  <p class="subtitle">ᶘｲ^⇁^ﾅ川のスレ書き込みで何匹捕まえた？</p>
 </header>
 
 <section class="input-section">
   <div class="input-row">
-    <input type="text" id="url-input"
-      placeholder="https://jbbs.shitaraba.net/bbs/read.cgi/…"
-      autocomplete="off" autocorrect="off" spellcheck="false"
-    />
-    <button id="calc-btn" onclick="startCalc()">集計する</button>
+    <input type="text" id="url-input" placeholder="https://jbbs.shitaraba.net/bbs/read.cgi/…" autocomplete="off" spellcheck="false" />
+    <button id="calc-btn">集計する</button>
   </div>
   <p class="hint">したらば掲示板のスレURLを貼り付けてください</p>
 </section>
 
 <div id="error-box"></div>
-<div id="loading">
-  <div class="spinner"></div>
-  書き込みを読み込み中…
-</div>
+<div id="loading"><div class="spinner"></div>書き込みを読み込み中…</div>
 
 <section id="result">
-  <div id="thread-title" style="text-align:center;margin-bottom:1rem;font-size:0.9rem;font-weight:700;color:var(--soft);word-break:break-all;padding:0.5rem 1rem;background:var(--surface);border:1px solid var(--panel);border-radius:10px;display:none;"></div>
+  <div id="thread-title"></div>
   <div class="score-card">
     <div class="score-label">保護したあにょざらし</div>
     <div class="score-num" id="total-score">0</div>
     <div class="score-unit">匹</div>
   </div>
-
   <div class="stats-grid">
-    <div class="stat-item">
-      <div class="stat-label">総書き込み数</div>
-      <div class="stat-val" id="stat-posts">—</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-label">プールに残っている</div>
-      <div class="stat-val" id="stat-pool">—</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-label">00秒 回収イベント</div>
-      <div class="stat-val delta-get" id="stat-00">—</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-label">最大同時プール</div>
-      <div class="stat-val" id="stat-maxpool">—</div>
-    </div>
-    <div class="stat-item" style="grid-column: 1 / -1;">
-      <div class="stat-label">ᶘイ^⇁^ヅ川 の訪問回数</div>
-      <div class="stat-val delta-zero" id="stat-17">—</div>
-    </div>
+    <div class="stat-item"><div class="stat-label">総書き込み数</div><div class="stat-val" id="stat-posts">—</div></div>
+    <div class="stat-item"><div class="stat-label">プールに残っている</div><div class="stat-val" id="stat-pool">—</div></div>
+    <div class="stat-item"><div class="stat-label">00秒 回収イベント</div><div class="stat-val delta-get" id="stat-00">—</div></div>
+    <div class="stat-item"><div class="stat-label">最大同時プール</div><div class="stat-val" id="stat-maxpool">—</div></div>
+    <div class="stat-item" style="grid-column:1/-1"><div class="stat-label">ᶘｲ^⇁^ﾅ川 の訪問回数</div><div class="stat-val delta-zero" id="stat-17">—</div></div>
   </div>
-
   <div class="log-section">
     <div class="log-header">
+      <span>📝 イベントログ（特殊秒のみ）</span>
+      <button class="log-toggle" id="log-toggle-btn">折りたたむ</button>
+    </div>
+    <div id="log-body"><div id="log-rows"></div></div>
+  </div>
+  <div class="chart-wrap">
+    <div class="chart-title">📈 プール・保護の推移</div>
+    <canvas id="chart"></canvas>
+  </div>
+</section>
+
+<section class="rules-section">
+  <details>
+    <summary>ルール一覧</summary>
+    <div class="rules-list">
+      <div class="rule-row"><span class="rule-sec">全秒</span><span class="rule-desc">書き込み1件 → プールに+1匹</span></div>
+      <div class="rule-row"><span class="rule-sec">:00</span><span class="rule-desc">🪤 プール全回収（保護へ）</span></div>
+      <div class="rule-row"><span class="rule-sec">:14</span><span class="rule-desc">|ｲ•᷄ - •᷅|𐙚|| があにょを連れてくる（保護+10匹）</span></div>
+      <div class="rule-row"><span class="rule-sec">:17</span><span class="rule-desc">ᶘｲ^⇁^ﾅ川 が遊びに来る（保護±0）</span></div>
+      <div class="rule-row"><span class="rule-sec">:20</span><span class="rule-desc">uism が chk に絆されてどこかへ（保護+10匹）</span></div>
+      <div class="rule-row"><span class="rule-sec">:27</span><span class="rule-desc">😨 uism に襲われる（保護−30匹）</span></div>
+      <div class="rule-row"><span class="rule-sec">:52</span><span class="rule-desc">😱 梢に襲われる（保護−10匹）</span></div>
+      <div class="rule-row"><span class="rule-sec">:57</span><span class="rule-desc">knknc が供給（保護+20匹）</span></div>
+    </div>
+  </details>
+</section>
+
+<script>
+// ── ルール定義（変更はここだけ）──
+// type:'collect' → :00専用（プール全回収→保護）
+// type:'score'   → 保護を直接増減（プールに影響なし）
+var RULES = {
+  '00': { label: '🪤 罠回収！プールのあにょを保護', type: 'collect' },
+  '14': { label: '|ｲ•᷄ - •᷅|𐙚|| があにょを連れてくる', delta: 10,  type: 'score' },
+  '17': { label: 'ᶘｲ^⇁^ﾅ川 が遊びに来る',              delta: 0,   type: 'score' },
+  '20': { label: 'uism が chk に絆されてどこかへ',        delta: 10,  type: 'score' },
+  '27': { label: 'uism に襲われる！',                    delta: -30, type: 'score' },
+  '52': { label: '梢に襲われる！',                       delta: -10, type: 'score' },
+  '57': { label: 'knknc が供給される',                   delta: 20,  type: 'score' }
+};
+
+var logCollapsed = false;
+
+document.getElementById('log-toggle-btn').addEventListener('click', function() {
+  logCollapsed = !logCollapsed;
+  document.getElementById('log-body').classList.toggle('collapsed', logCollapsed);
+  this.textContent = logCollapsed ? '展開する' : '折りたたむ';
+});
+
+document.getElementById('calc-btn').addEventListener('click', startCalc);
+document.getElementById('url-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') startCalc();
+});
+
+function showError(msg) {
+  var el = document.getElementById('error-box');
+  el.textContent = '⚠️ ' + msg;
+  el.style.display = 'block';
+}
+function hideError() {
+  document.getElementById('error-box').style.display = 'none';
+}
+
+function toRawUrl(input) {
+  var u = input.trim().replace(/\/$/, '');
+  var m = u.match(/jbbs\.shitaraba\.net\/bbs\/read\.cgi\/([^\/]+\/[^\/]+\/[^\/]+)/);
+  if (m) return 'https://jbbs.shitaraba.net/bbs/rawmode.cgi/' + m[1] + '/1-';
+  if (u.indexOf('rawmode.cgi') !== -1) return u;
+  var m2 = u.match(/jbbs\.shitaraba\.net\/([^\/]+\/\d+\/\d+)/);
+  if (m2) return 'https://jbbs.shitaraba.net/bbs/rawmode.cgi/' + m2[1] + '/1-';
+  return null;
+}
+
+function parseRaw(text) {
+  var lines = text.split('\n');
+  var posts = [];
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i].trim();
+    if (!line) continue;
+    var parts = line.split('<>');
+    if (parts.length < 6) continue;
+    var date = parts[3].trim();
+    var sm = date.match(/:(\d{2})$/);
+    if (!sm) continue;
+    posts.push({ num: parts[0].trim(), date: date, sec: sm[1], title: parts[5].trim() });
+  }
+  return posts;
+}
+
+function startCalc() {
+  var input = document.getElementById('url-input').value.trim();
+  if (!input) { showError('URLを入力してください'); return; }
+
+  hideError();
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('calc-btn').disabled = true;
+
+  var rawUrl = toRawUrl(input);
+  if (!rawUrl) {
+    showError('URLの形式が正しくありません。したらば掲示板のスレURLを入力してください。');
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('calc-btn').disabled = false;
+    return;
+  }
+
+  var proxyUrl = '/api/fetch?url=' + encodeURIComponent(rawUrl);
+
+  fetch(proxyUrl)
+    .then(function(res) {
+      if (!res.ok) {
+        return res.text().then(function(t) { throw new Error('取得失敗 HTTP ' + res.status + ': ' + t); });
+      }
+      return res.text();
+    })
+    .then(function(text) {
+      var posts = parseRaw(text);
+      if (posts.length === 0) throw new Error('書き込みが見つかりませんでした。URLを確認してください。');
+
+      var titleEl = document.getElementById('thread-title');
+      var titleText = posts[0].title || '';
+      if (titleText) { titleEl.textContent = '📌 ' + titleText; titleEl.style.display = 'block'; }
+      else { titleEl.style.display = 'none'; }
+
+      renderResult(posts);
+    })
+    .catch(function(err) {
+      showError(err.message);
+    })
+    .finally(function() {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('calc-btn').disabled = false;
+    });
+}
+
+function renderResult(posts) {
+  var pool = 0, score = 0, maxPool = 0, collectCount = 0, visit17 = 0;
+  var events = [];
+  var chartData = [];
+
+  for (var i = 0; i < posts.length; i++) {
+    var post = posts[i];
+    pool += 1;
+
+    var rule = RULES[post.sec];
+    if (rule) {
+      if (rule.type === 'collect') {
+        if (pool > 0) {
+          score += pool;
+          collectCount++;
+          events.push({ num: post.num, date: post.date, label: rule.label, delta: pool, type: 'collect' });
+          pool = 0;
+        } else {
+          events.push({ num: post.num, date: post.date, label: rule.label, delta: 0, type: 'collect-empty' });
+        }
+      } else if (rule.type === 'score') {
+        if (post.sec === '17') visit17++;
+        score += rule.delta;
+        if (score < 0) score = 0;
+        var evType = rule.delta > 0 ? 'plus' : rule.delta < 0 ? 'minus' : 'zero';
+        events.push({ num: post.num, date: post.date, label: rule.label, delta: rule.delta, type: evType });
+      }
+    }
+
+    if (pool > maxPool) maxPool = pool;
+    chartData.push({ idx: i, pool: pool, score: score });
+  }
+
+  document.getElementById('total-score').textContent = score.toLocaleString();
+  document.getElementById('stat-posts').textContent = posts.length.toLocaleString() + ' 件';
+  document.getElementById('stat-pool').textContent = pool.toLocaleString() + ' 匹';
+  document.getElementById('stat-00').textContent = collectCount + ' 回';
+  document.getElementById('stat-maxpool').textContent = maxPool.toLocaleString() + ' 匹';
+  document.getElementById('stat-17').textContent = visit17.toLocaleString() + ' 回';
+
+  var logRows = document.getElementById('log-rows');
+  logRows.innerHTML = '';
+  if (events.length === 0) {
+    logRows.innerHTML = '<div class="log-row"><span class="log-event" style="color:var(--muted);grid-column:1/-1">特殊秒の書き込みはありませんでした</span></div>';
+  } else {
+    for (var j = 0; j < events.length; j++) {
+      var ev = events[j];
+      var dc = '', ds = '';
+      if (ev.type === 'collect')       { dc = 'delta-get';   ds = '+' + ev.delta + '匹 保護！'; }
+      else if (ev.type === 'collect-empty') { dc = 'delta-zero'; ds = '(空)'; }
+      else if (ev.type === 'plus')     { dc = 'delta-plus';  ds = '+' + ev.delta; }
+      else if (ev.type === 'minus')    { dc = 'delta-minus'; ds = '' + ev.delta; }
+      else                             { dc = 'delta-zero';  ds = '±0'; }
+      var row = document.createElement('div');
+      row.className = 'log-row';
+      row.innerHTML = '<span class="log-res">&gt;&gt;' + ev.num + '</span>'
+        + '<span class="log-event">' + ev.label + '<br><span style="font-size:.68rem;color:var(--muted)">' + ev.date + '</span></span>'
+        + '<span class="log-delta ' + dc + '">' + ds + '</span>';
+      logRows.appendChild(row);
+    }
+  }
+
+  document.getElementById('result').style.display = 'block';
+  drawChart(chartData);
+  document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function drawChart(data) {
+  var canvas = document.getElementById('chart');
+  var ctx = canvas.getContext('2d');
+  var dpr = window.devicePixelRatio || 1;
+  var W = canvas.parentElement.clientWidth - 32;
+  var H = 200;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  ctx.scale(dpr, dpr);
+
+  if (data.length < 2) return;
+
+  var poolVals  = data.map(function(d) { return d.pool; });
+  var scoreVals = data.map(function(d) { return d.score; });
+  var allVals   = poolVals.concat(scoreVals);
+  var maxVal    = Math.max.apply(null, allVals.concat([1]));
+  var minVal    = Math.min.apply(null, allVals.concat([0]));
+  var range     = maxVal - minVal || 1;
+  var pad       = { top: 16, right: 16, bottom: 28, left: 44 };
+  var gW = W - pad.left - pad.right;
+  var gH = H - pad.top - pad.bottom;
+
+  ctx.fillStyle = '#0f3460';
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+  ctx.lineWidth = 1;
+  for (var i = 0; i <= 4; i++) {
+    var y = pad.top + (gH / 4) * i;
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(pad.left + gW, y); ctx.stroke();
+    var val = Math.round(maxVal - (range / 4) * i);
+    ctx.fillStyle = '#7b82a8'; ctx.font = '10px sans-serif'; ctx.textAlign = 'right';
+    ctx.fillText(val, pad.left - 4, y + 4);
+  }
+
+  function toX(i) { return pad.left + (i / (data.length - 1)) * gW; }
+  function toY(v) { return pad.top + gH - ((v - minVal) / range) * gH; }
+
+  function drawLine(vals, color) {
+    ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.lineJoin = 'round';
+    for (var k = 0; k < vals.length; k++) {
+      if (k === 0) ctx.moveTo(toX(k), toY(vals[k]));
+      else ctx.lineTo(toX(k), toY(vals[k]));
+    }
+    ctx.stroke();
+  }
+
+  drawLine(poolVals,  '#c9d6ff');
+  drawLine(scoreVals, '#5ef0c8');
+
+  ctx.fillStyle = '#7b82a8'; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+  var labelIdxs = [0, Math.floor(data.length / 2), data.length - 1];
+  for (var li = 0; li < labelIdxs.length; li++) {
+    ctx.fillText('>>' + (labelIdxs[li] + 1), toX(labelIdxs[li]), H - 8);
+  }
+
+  ctx.font = '11px sans-serif'; ctx.textAlign = 'left';
+  ctx.fillStyle = '#c9d6ff'; ctx.fillRect(pad.left, 4, 12, 8);
+  ctx.fillStyle = '#eef0ff'; ctx.fillText('プール', pad.left + 16, 12);
+  ctx.fillStyle = '#5ef0c8'; ctx.fillRect(pad.left + 72, 4, 12, 8);
+  ctx.fillStyle = '#eef0ff'; ctx.fillText('保護', pad.left + 88, 12);
+}
+</script>
+</body>
+</html>
+>
       <span>📝 イベントログ（特殊秒のみ）</span>
       <button class="log-toggle" onclick="toggleLog(this)">折りたたむ</button>
     </div>
