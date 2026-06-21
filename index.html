@@ -99,10 +99,10 @@
     <div class="stat-item"><div class="stat-label">00秒 回収イベント</div><div class="stat-val delta-get" id="stat-00">—</div></div>
     <div class="stat-item"><div class="stat-label">最大同時プール</div><div class="stat-val" id="stat-maxpool">—</div></div>
     <div class="stat-item full"><div class="stat-label">ᶘｲ^⇁^ﾅ川 の訪問回数</div><div class="stat-val delta-zero" id="stat-17">—</div></div>
-    <div class="stat-item full"><div class="stat-label">|ｲ•᷄ - •᷅|𐙚|| が連れてきたʃ§ ( っ⁼´꒳`)っの数</div><div class="stat-val delta-plus" id="stat-14">—</div></div>
+    <div class="stat-item full"><div class="stat-label">|ｲ•᷄ - •᷅|𐙚|| がʃ§ ( っ⁼´꒳`)っを連れてきた回数</div><div class="stat-val delta-plus" id="stat-14">—</div></div>
     <div class="stat-item full"><div class="stat-label">uism が chk に絆された回数</div><div class="stat-val delta-plus" id="stat-20">—</div></div>
-    <div class="stat-item full"><div class="stat-label">uism に連れて行かれたʃ§ ( っ⁼´꒳`)っの数</div><div class="stat-val delta-minus" id="stat-27">—</div></div>
-    <div class="stat-item full"><div class="stat-label">梢に連れて行かれたʃ§ ( っ⁼´꒳`)っの数</div><div class="stat-val delta-minus" id="stat-52">—</div></div>
+    <div class="stat-item full"><div class="stat-label">uism がʃ§ ( っ⁼´꒳`)っを連れて行った回数</div><div class="stat-val delta-minus" id="stat-27">—</div></div>
+    <div class="stat-item full"><div class="stat-label">梢がʃ§ ( っ⁼´꒳`)っを連れて行った回数</div><div class="stat-val delta-minus" id="stat-52">—</div></div>
     <div class="stat-item full"><div class="stat-label">knknc がイチャイチャした回数</div><div class="stat-val delta-plus" id="stat-57">—</div></div>
   </div>
   <div class="log-section">
@@ -279,10 +279,10 @@ function renderResult(posts) {
   document.getElementById('stat-00').textContent = collectCount + ' 回';
   document.getElementById('stat-maxpool').textContent = maxPool.toLocaleString() + ' 匹';
   document.getElementById('stat-17').textContent = visit17 + ' 回';
-  document.getElementById('stat-14').textContent = count14 + ' 匹';
+  document.getElementById('stat-14').textContent = count14 + ' 回';
   document.getElementById('stat-20').textContent = count20 + ' 回';
-  document.getElementById('stat-27').textContent = count27 + ' 匹';
-  document.getElementById('stat-52').textContent = count52 + ' 匹';
+  document.getElementById('stat-27').textContent = count27 + ' 回';
+  document.getElementById('stat-52').textContent = count52 + ' 回';
   document.getElementById('stat-57').textContent = count57 + ' 回';
 
   var logRows = document.getElementById('log-rows');
